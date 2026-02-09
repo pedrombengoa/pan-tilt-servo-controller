@@ -1,0 +1,35 @@
+# Gradle files
+.gradle/
+build/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Android Studio IDE files
+.idea/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+
+# Keystore files
+*.jks
+*.keystore
+
+# Outputs
+captures/
+.cxx/
+
+# Google Play services file
+google-services.json
+
+# Gradle Wrapper
+!gradle/wrapper/gradle-wrapper.jar
+/gradlew
+/gradlew.bat
+
+# Misc
+*.apk
+*.ap_
+*.aab
+*.aar
