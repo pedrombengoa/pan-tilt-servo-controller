@@ -1,78 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp">
+    android:background="?android:attr/colorBackground"
+    android:fitsSystemWindows="true"
+    tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/tvStatus"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Estado: Desconectado"
-        android:textSize="18sp"
-        android:gravity="center"
-        android:layout_marginBottom="24dp" />
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:title="@string/app_name"
+        app:titleTextColor="@android:color/white" />
 
-    <Button
-        android:id="@+id/btnConnect"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Conectar Bluetooth"
-        android:layout_marginBottom="32dp" />
-
-    <TextView
+    <androidx.cardview.widget.CardView
+        android:id="@+id/controlsCard"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ángulo del servo (0° - 180°)"
-        android:textSize="16sp"
-        android:layout_gravity="center" />
-
-    <SeekBar
-        android:id="@+id/seekBarAngle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="180"
-        android:progress="90"
+        android:layout_height="372dp"
+        android:layout_below="@id/toolbar"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="32dp" />
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:contentPadding="24dp">
 
-    <TextView
-        android:id="@+id/tvAngle"
+        <LinearLayout
+            android:layout_width="341dp"
+            android:layout_height="263dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:gravity="center"
+                android:text="Estado: Desconectado"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Ángulo del servo (0° - 180°)"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption" />
+
+            <SeekBar
+                android:id="@+id/seekBarAngle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:max="180"
+                android:progress="90" />
+
+            <TextView
+                android:id="@+id/tvAngle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="32dp"
+                android:text="Ángulo actual: 90°"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLeft"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="Izquierda (30°)" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCenter"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="Centro (90°)" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRight"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="Derecha (150°)" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnConnect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ángulo actual: 90°"
-        android:textSize="18sp"
-        android:layout_gravity="center"
-        android:layout_marginBottom="32dp" />
+        android:layout_below="@id/controlsCard"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="-52dp"
+        android:src="@drawable/ic_bluetooth"
+        app:tint="@android:color/white" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-        <Button
-            android:id="@+id/btnLeft"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="Izquierda (30°)" />
-
-        <Button
-            android:id="@+id/btnCenter"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="Centro (90°)" />
-
-        <Button
-            android:id="@+id/btnRight"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="Derecha (150°)" />
-
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>
