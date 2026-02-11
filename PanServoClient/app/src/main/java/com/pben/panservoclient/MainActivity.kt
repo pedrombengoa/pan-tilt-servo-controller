@@ -1,35 +1,44 @@
 package com.pben.panservoclient
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.widget.*
+import android.os.Handler
+import android.os.Looper
+import android.view.MotionEvent
+import android.widget.ImageButton
+import android.widget.SeekBar
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.IOException
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var bluetoothAdapter: BluetoothAdapter
-    private lateinit var btnConnect: FloatingActionButton
+    private lateinit var btnConnect: ImageButton
+    private lateinit var btnPlayPause: MaterialButton
 
     private val hc05Uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
 
-    // Cambia este nombre por el que pusiste en SerialBT.begin()
-    private val deviceName = "PanTilt"   // o "PanTiltMG996R"
+    // Change this to the name you set in SerialBT.begin()
+    private val deviceName = "PanTilt"   // or "PanTiltMG996R"
 
+    private val handler = Handler(Looper.getMainLooper())
+    private var isHolding = false
+    private var isAutopan = false
+
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -41,35 +50,36 @@ class MainActivity : AppCompatActivity() {
         val seekBar: SeekBar = findViewById(R.id.seekBarAngle)
         val tvAngle: TextView = findViewById(R.id.tvAngle)
         val tvStatus: TextView = findViewById(R.id.tvStatus)
-        val btnLeft: MaterialButton = findViewById(R.id.btnLeft)
-        val btnCenter: MaterialButton = findViewById(R.id.btnCenter)
-        val btnRight: MaterialButton = findViewById(R.id.btnRight)
+        val btnSkipPrevious: MaterialButton = findViewById(R.id.btnSkipPrevious)
+        btnPlayPause = findViewById(R.id.btnPlayPause)
+        val btnStop: MaterialButton = findViewById(R.id.btnStop)
+        val btnSkipNext: MaterialButton = findViewById(R.id.btnSkipNext)
 
         val bluetoothManager = getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bluetoothManager.adapter
 
         updateButtonState(false)
 
-        // Inicializa slider en 90°
+        // Initialize slider at 90°
         seekBar.progress = 90
-        tvAngle.text = "Ángulo actual: 90°"
+        tvAngle.text = "Current Angle: 90°"
 
-        // Conectar / desconectar
+        // Connect / disconnect
         btnConnect.setOnClickListener {
             if (BluetoothConnection.bluetoothSocket?.isConnected == true) {
                 disconnect()
-                tvStatus.text = "Estado: Desconectado"
+                tvStatus.text = "Status: Disconnected"
             } else {
                 requestBluetoothPermission()
             }
         }
 
-        // Slider controla ángulo
+        // Slider controls angle
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
                     BluetoothConnection.sendCommand("P$progress")
-                    tvAngle.text = "Ángulo actual: $progress°"
+                    tvAngle.text = "Current Angle: $progress°"
                 }
             }
 
@@ -77,37 +87,60 @@ class MainActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
 
-        // Botones rápidos
-        btnLeft.setOnClickListener { 
-            BluetoothConnection.sendCommand("P30") 
-            seekBar.progress = 30
-            tvAngle.text = "Ángulo actual: 30°"
+        // Quick buttons
+        btnSkipPrevious.setOnTouchListener { _, event ->
+            handleTouch(event, seekBar, tvAngle, -1)
+            true
         }
-        btnCenter.setOnClickListener { 
-            BluetoothConnection.sendCommand("P90")
-            seekBar.progress = 90
-            tvAngle.text = "Ángulo actual: 90°"
-        }
-        btnRight.setOnClickListener { 
-            BluetoothConnection.sendCommand("P150")
-            seekBar.progress = 150
-            tvAngle.text = "Ángulo actual: 150°"
-        }
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return true
-    }
+        btnSkipNext.setOnTouchListener { _, event ->
+            handleTouch(event, seekBar, tvAngle, 1)
+            true
+        }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_settings -> {
-                val intent = Intent(this, SettingsActivity::class.java)
-                startActivity(intent)
-                true
+        btnPlayPause.setOnClickListener { 
+            isAutopan = !isAutopan
+            if (isAutopan) {
+                BluetoothConnection.sendCommand("AUTOPAN")
+                btnPlayPause.setIconResource(R.drawable.ic_pause)
+            } else {
+                BluetoothConnection.sendCommand("P${seekBar.progress}")
+                btnPlayPause.setIconResource(R.drawable.ic_play_arrow)
             }
-            else -> super.onOptionsItemSelected(item)
+        }
+
+        btnStop.setOnClickListener {
+            isAutopan = false
+            btnPlayPause.setIconResource(R.drawable.ic_play_arrow)
+            BluetoothConnection.sendCommand("RESET")
+            seekBar.progress = 90
+            tvAngle.text = "Current Angle: 90°"
+        }
+    }
+
+    private fun handleTouch(event: MotionEvent, seekBar: SeekBar, tvAngle: TextView, direction: Int) {
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                isHolding = true
+                handler.post(object : Runnable {
+                    override fun run() {
+                        if (isHolding) {
+                            val command = if (direction == -1) "LEFT" else "RIGHT"
+                            BluetoothConnection.sendCommand(command)
+
+                            val newProgress = seekBar.progress + direction
+                            if (newProgress in 0..180) {
+                                seekBar.progress = newProgress
+                                tvAngle.text = "Current Angle: $newProgress°"
+                            }
+                            handler.postDelayed(this, 100)
+                        }
+                    }
+                })
+            }
+            MotionEvent.ACTION_UP -> {
+                isHolding = false
+            }
         }
     }
 
@@ -156,24 +189,24 @@ class MainActivity : AppCompatActivity() {
                         BluetoothConnection.inputStream = BluetoothConnection.bluetoothSocket?.inputStream
                         
                         // Update UI on successful connection
-                        findViewById<TextView>(R.id.tvStatus).text = "Estado: Conectado a $deviceName"
-                        Toast.makeText(this, "Conectado a $deviceName", Toast.LENGTH_SHORT).show()
+                        findViewById<TextView>(R.id.tvStatus).text = "Status: Connected to $deviceName"
+                        Toast.makeText(this, "Connected to $deviceName", Toast.LENGTH_SHORT).show()
                         updateButtonState(true)
 
                     } catch (e: IOException) {
-                        Toast.makeText(this, "Error al conectar: ${e.message}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "Error connecting: ${e.message}", Toast.LENGTH_LONG).show()
                         updateButtonState(false)
                     }
                 } else {
-                    Toast.makeText(this, "No se encontró $deviceName. Empareja primero.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "$deviceName not found. Please pair first.", Toast.LENGTH_LONG).show()
                     updateButtonState(false)
                 }
             } else {
                  // This part should ideally not be reached on newer APIs due to the permission check above
-                 Toast.makeText(this, "Permiso de Bluetooth no concedido.", Toast.LENGTH_SHORT).show()
+                 Toast.makeText(this, "Bluetooth permission not granted.", Toast.LENGTH_SHORT).show()
             }
         } else {
-            Toast.makeText(this, "Activa Bluetooth primero", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Please enable Bluetooth first", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -183,11 +216,11 @@ class MainActivity : AppCompatActivity() {
             BluetoothConnection.bluetoothSocket?.close()
             BluetoothConnection.outputStream = null
             BluetoothConnection.bluetoothSocket = null
-            findViewById<TextView>(R.id.tvStatus).text = "Estado: Desconectado"
-            Toast.makeText(this, "Desconectado", Toast.LENGTH_SHORT).show()
+            findViewById<TextView>(R.id.tvStatus).text = "Status: Disconnected"
+            Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show()
             updateButtonState(false)
         } catch (e: IOException) {
-            // ignorar
+            // ignore
         }
     }
 
