@@ -2,15 +2,19 @@ package com.pben.panservoclient
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.PictureInPictureParams
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Rational
 import android.view.MotionEvent
+import android.view.View
 import android.widget.ImageButton
 import android.widget.SeekBar
 import android.widget.TextView
@@ -115,6 +119,26 @@ class MainActivity : AppCompatActivity() {
             BluetoothConnection.sendCommand("RESET")
             seekBar.progress = 90
             tvAngle.text = "Current Angle: 90°"
+        }
+    }
+
+    override fun onUserLeaveHint() {
+        if (packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
+            enterPictureInPictureMode(PictureInPictureParams.Builder()
+                .setAspectRatio(Rational(1, 1))
+                .build())
+        }
+    }
+
+    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: Configuration) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
+        val controlsCard = findViewById<View>(R.id.controlsCard)
+        if (isInPictureInPictureMode) {
+            // Hide the controls in PiP mode
+            controlsCard.visibility = View.GONE
+        } else {
+            // Restore the controls when exiting PiP mode
+            controlsCard.visibility = View.VISIBLE
         }
     }
 
