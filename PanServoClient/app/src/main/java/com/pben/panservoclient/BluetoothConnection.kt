@@ -49,7 +49,7 @@ object BluetoothConnection {
 
         scope.launch {
             try {
-                val socket = device.createRfcommSocketToServiceRecord(hc05Uuid)
+                val socket = device.createInsecureRfcommSocketToServiceRecord(hc05Uuid)
                 socket.connect()
                 bluetoothSocket = socket
                 outputStream = socket.outputStream

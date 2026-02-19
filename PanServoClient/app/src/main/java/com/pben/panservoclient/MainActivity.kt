@@ -26,12 +26,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -46,7 +41,6 @@ class MainActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private var isHolding = false
     private var isAutopan = false
-    private var pollingJob: Job? = null
     private var currentAngle: Int = 90
 
     @SuppressLint("ClickableViewAccessibility")
@@ -106,6 +100,8 @@ class MainActivity : AppCompatActivity() {
             updatePlayPauseButton()
             BluetoothConnection.sendCommand("RESET")
         }
+
+        requestBluetoothPermission()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -127,11 +123,6 @@ class MainActivity : AppCompatActivity() {
         BluetoothConnection.isConnected.observe(this) { isConnected ->
             updateButtonState(isConnected)
             tvStatus.text = if (isConnected) "Status: Connected" else "Status: Disconnected"
-            if (isConnected) {
-                startPolling()
-            } else {
-                pollingJob?.cancel()
-            }
         }
 
         BluetoothConnection.messages.observe(this) {
@@ -147,17 +138,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun updatePlayPauseButton() {
         btnPlayPause.setIconResource(if (isAutopan) R.drawable.ic_pause else R.drawable.ic_play_arrow)
-    }
-
-    private fun startPolling() {
-        if (BluetoothConnection.isConnected.value != true) return
-        pollingJob?.cancel()
-        pollingJob = lifecycleScope.launch(Dispatchers.IO) {
-            while (true) {
-                BluetoothConnection.sendCommand("INFO")
-                delay(1000)
-            }
-        }
     }
 
     private fun parseAngle(settings: String?) {

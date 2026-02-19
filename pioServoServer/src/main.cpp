@@ -106,12 +106,10 @@ void enqueueMessage(const String& message) {
 void processMessageQueue() {
   // Process one message per loop iteration to avoid blocking
   if (queueSize > 0 && SerialBT.hasClient()) {
-    // Check if we can write (non-blocking check)
-    if (SerialBT.availableForWrite() > 0) {
-      SerialBT.println(messageQueue[queueHead]);
-      queueHead = (queueHead + 1) % MAX_QUEUE_SIZE;
-      queueSize--;
-    }
+    Serial.println("Logging to BT: " + messageQueue[queueHead]);
+    SerialBT.println(messageQueue[queueHead]);
+    queueHead = (queueHead + 1) % MAX_QUEUE_SIZE;
+    queueSize--;
   }
 }
 
