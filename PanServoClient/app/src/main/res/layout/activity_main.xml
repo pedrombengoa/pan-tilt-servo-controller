@@ -34,8 +34,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:layout_marginBottom="24dp">
 
                 <TextView
@@ -50,26 +50,30 @@
                     android:id="@+id/btnConnect"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_bluetooth"
-                    app:tint="?attr/colorPrimary" />
+                    android:background="@drawable/button_border"
+                    android:src="@drawable/ic_bluetooth_disabled"
+                    app:tint="?attr/colorOnSurface"
+                    android:padding="12dp"/>
+
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Servo Angle (0° - 180°)"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption" />
+            <RelativeLayout
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center">
 
-            <SeekBar
-                android:id="@+id/seekBarAngle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:max="180"
-                android:progress="90" />
+                <ImageView
+                    android:id="@+id/compassBase"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_compass_base"/>
+
+                <ImageView
+                    android:id="@+id/compassNeedle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_compass_needle"/>
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/tvAngle"
@@ -89,39 +93,35 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSkipPrevious"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
                     app:icon="@drawable/ic_arrow_left" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnPlayPause"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
                     app:icon="@drawable/ic_play_arrow" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnStop"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
                     app:icon="@drawable/ic_stop" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSkipNext"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_weight="1"
                     app:icon="@drawable/ic_arrow_right" />
 
             </LinearLayout>
