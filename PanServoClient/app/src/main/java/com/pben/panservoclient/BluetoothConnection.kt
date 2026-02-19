@@ -31,6 +31,7 @@ object BluetoothConnection {
     val isConnected = MutableLiveData(false)
     val messages = MutableLiveData<String>()
     val errors = MutableLiveData<String>()
+    val logCache = mutableListOf<String>()
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var listeningJob: Job? = null
@@ -90,10 +91,13 @@ object BluetoothConnection {
                 while (isActive) {
                     val response = reader.readLine() ?: break
                     messages.postValue(response)
+                    logCache.add(response)
                 }
             } catch (e: IOException) {
                 if (isActive) {
-                    errors.postValue("Connection lost: ${e.message}")
+                    val errorMsg = "Connection lost: ${e.message}"
+                    errors.postValue(errorMsg)
+                    logCache.add("ERROR: $errorMsg")
                     isConnected.postValue(false)
                 }
             }
@@ -107,15 +111,23 @@ object BluetoothConnection {
 
     fun sendCommand(command: String) {
         if (isConnected.value != true) {
-            errors.postValue("Not connected.")
+            val errorMsg = "Not connected."
+            errors.postValue(errorMsg)
+            logCache.add("ERROR: $errorMsg")
             return
         }
         scope.launch {
             try {
                 outputStream?.write("$command\n".toByteArray())
             } catch (e: IOException) {
-                errors.postValue("Error sending command: ${e.message}")
+                val errorMsg = "Error sending command: ${e.message}"
+                errors.postValue(errorMsg)
+                logCache.add("ERROR: $errorMsg")
             }
         }
+    }
+
+    fun clearLogs() {
+        logCache.clear()
     }
 }

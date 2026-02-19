@@ -40,8 +40,8 @@ int autoDirection = 1;          // 1 = right (+), -1 = left (-)
 bool lastButton = HIGH;
 // ── Forward declarations ──────────────────────────────
 void log(const String& message);
-void moveLeft();
-void moveRight();
+void moveLeft(const String& source);
+void moveRight(const String& source);
 void processBTCommands();
 void processConfigCommands(const String& cmd);
 void processJoystickCommands();
@@ -110,7 +110,6 @@ void processMessageQueue() {
   unsigned long now = millis();
   
   if (queueSize > 0 && SerialBT.hasClient() && (now - lastSendTime >= 200)) {
-    Serial.println("Logging to BT: " + messageQueue[queueHead]);
     SerialBT.println(messageQueue[queueHead]);
     queueHead = (queueHead + 1) % MAX_QUEUE_SIZE;
     queueSize--;
@@ -125,20 +124,26 @@ void log(const String& message) {
   enqueueMessage(message);
 }
 
+void logSerial(const String& message) {
+  // Log only to Serial, not to Bluetooth (for high-frequency updates)
+  Serial.println(message);
+  Serial.flush();
+}
+
 // ──────────────────────────────────────────────────────────────
 // ── Movement Methods ───────────────────────────────────────────
 // ──────────────────────────────────────────────────────────────
 
-void moveLeft() {
+void moveLeft(const String& source) {
   currentAngle = constrain(currentAngle - movementSpeed, 0, 180);
   servoPan.write(currentAngle);
-  log("Moving Left → " + String(currentAngle));
+  log("Channel: " + source + " | Command: LEFT | Position: " + String(currentAngle));
 }
 
-void moveRight() {
+void moveRight(const String& source) {
   currentAngle = constrain(currentAngle + movementSpeed, 0, 180);
   servoPan.write(currentAngle);
-  log("Moving Right → " + String(currentAngle));
+  log("Channel: " + source + " | Command: RIGHT | Position: " + String(currentAngle));
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -153,10 +158,10 @@ void processBTCommands() {
 
   // ── Pan control commands ────────────────────────────
   if (cmd == "LEFT") {
-    moveRight();
+    moveRight("bluetooth");
   }
   else if (cmd == "RIGHT") {
-    moveLeft();
+    moveLeft("bluetooth");
   }
   else if (cmd == "RESET") {
     resetSettings();
@@ -212,15 +217,16 @@ void processJoystickCommands() {
 
     // Manual control
     if (valorX < centroX) {
-      moveLeft();
+      moveLeft("Joystick");
     } else {
-      moveRight();
+      moveRight("Joystick");
     }
   }
 
   // ── Auto panning (runs independently when enabled) ──
   if (autoPanningActive) {
     static unsigned long lastStep = 0;
+    static int autoPanUpdateCount = 0;
     unsigned long now = millis();
 
     if (now - lastStep >= 80) {
@@ -238,7 +244,14 @@ void processJoystickCommands() {
       servoPan.write(currentAngle);
       lastStep = now;
 
-      log("Auto → " + String(currentAngle));
+      // Log to Bluetooth only every 10 updates to prevent congestion
+      autoPanUpdateCount++;
+      if (autoPanUpdateCount >= 10) {
+        log("Channel: AutoPan | Command: Move | Position: " + String(currentAngle));
+        autoPanUpdateCount = 0;
+      } else {
+        logSerial("Channel: AutoPan | Command: Move | Position: " + String(currentAngle));
+      }
     }
   }
 }

@@ -25,6 +25,13 @@
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
         tools:text="Status: Connected" />
 
+    <Button
+        android:id="@+id/btnClearLogs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Clear Logs" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
