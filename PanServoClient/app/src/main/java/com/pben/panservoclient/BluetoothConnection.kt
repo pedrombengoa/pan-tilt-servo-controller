@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
@@ -14,6 +15,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
@@ -55,6 +57,9 @@ object BluetoothConnection {
                 outputStream = socket.outputStream
                 inputStream = socket.inputStream
                 isConnected.postValue(true)
+                withContext(Dispatchers.Main) {
+                    sendCommand("INFO")
+                }
                 startListening()
             } catch (e: IOException) {
                 isConnected.postValue(false)
@@ -64,6 +69,7 @@ object BluetoothConnection {
     }
 
     fun disconnect() {
+        Log.d("BluetoothConnection", "Disconnect called")
         stopListening()
         scope.launch {
             try {

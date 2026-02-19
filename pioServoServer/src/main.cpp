@@ -105,11 +105,16 @@ void enqueueMessage(const String& message) {
 
 void processMessageQueue() {
   // Process one message per loop iteration to avoid blocking
-  if (queueSize > 0 && SerialBT.hasClient()) {
+  // Throttle sends to prevent BT buffer overflow
+  static unsigned long lastSendTime = 0;
+  unsigned long now = millis();
+  
+  if (queueSize > 0 && SerialBT.hasClient() && (now - lastSendTime >= 200)) {
     Serial.println("Logging to BT: " + messageQueue[queueHead]);
     SerialBT.println(messageQueue[queueHead]);
     queueHead = (queueHead + 1) % MAX_QUEUE_SIZE;
     queueSize--;
+    lastSendTime = now;
   }
 }
 
