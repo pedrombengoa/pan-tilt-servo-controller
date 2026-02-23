@@ -36,6 +36,7 @@ int movementSpeed = DEFAULT_MOVEMENT_SPEED;
 int currentAngle = 90;
 bool autoPanningActive = false;
 int autoDirection = 1;          // 1 = right (+), -1 = left (-)
+bool servoReversed = true;      // Set to true if servo is installed backwards
 // track last button state to avoid spurious toggles at startup
 bool lastButton = HIGH;
 // ── Forward declarations ──────────────────────────────
@@ -131,19 +132,39 @@ void logSerial(const String& message) {
 }
 
 // ──────────────────────────────────────────────────────────────
+// ── Display Angle Helper ───────────────────────────────────────
+// ──────────────────────────────────────────────────────────────
+
+int getDisplayAngle() {
+  if (servoReversed) {
+    return 180 - currentAngle;
+  } else {
+    return currentAngle;
+  }
+}
+
+// ──────────────────────────────────────────────────────────────
 // ── Movement Methods ───────────────────────────────────────────
 // ──────────────────────────────────────────────────────────────
 
 void moveLeft(const String& source) {
-  currentAngle = constrain(currentAngle - movementSpeed, 0, 180);
+  if (servoReversed) {
+    currentAngle = constrain(currentAngle + movementSpeed, 0, 180);
+  } else {
+    currentAngle = constrain(currentAngle - movementSpeed, 0, 180);
+  }
   servoPan.write(currentAngle);
-  log("Channel: " + source + " | Command: LEFT | Position: " + String(currentAngle));
+  log("Channel: " + source + " | Command: LEFT | Position: " + String(getDisplayAngle()));
 }
 
 void moveRight(const String& source) {
-  currentAngle = constrain(currentAngle + movementSpeed, 0, 180);
+  if (servoReversed) {
+    currentAngle = constrain(currentAngle - movementSpeed, 0, 180);
+  } else {
+    currentAngle = constrain(currentAngle + movementSpeed, 0, 180);
+  }
   servoPan.write(currentAngle);
-  log("Channel: " + source + " | Command: RIGHT | Position: " + String(currentAngle));
+  log("Channel: " + source + " | Command: RIGHT | Position: " + String(getDisplayAngle()));
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -158,10 +179,10 @@ void processBTCommands() {
 
   // ── Pan control commands ────────────────────────────
   if (cmd == "LEFT") {
-    moveRight("bluetooth");
+    moveLeft("bluetooth");
   }
   else if (cmd == "RIGHT") {
-    moveLeft("bluetooth");
+    moveRight("bluetooth");
   }
   else if (cmd == "RESET") {
     resetSettings();
@@ -247,10 +268,10 @@ void processJoystickCommands() {
       // Log to Bluetooth only every 10 updates to prevent congestion
       autoPanUpdateCount++;
       if (autoPanUpdateCount >= 10) {
-        log("Channel: AutoPan | Command: Move | Position: " + String(currentAngle));
+        log("Channel: AutoPan | Command: Move | Position: " + String(getDisplayAngle()));
         autoPanUpdateCount = 0;
       } else {
-        logSerial("Channel: AutoPan | Command: Move | Position: " + String(currentAngle));
+        logSerial("Channel: AutoPan | Command: Move | Position: " + String(getDisplayAngle()));
       }
     }
   }
