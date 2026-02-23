@@ -43,6 +43,7 @@ bool lastButton = HIGH;
 void log(const String& message);
 void moveLeft(const String& source);
 void moveRight(const String& source);
+int getDisplayAngle();
 void processBTCommands();
 void processConfigCommands(const String& cmd);
 void processJoystickCommands();
@@ -64,6 +65,7 @@ void resetSettings() {
   log("\n╔════════════════════════════════════════╗");
   log("║  SETTINGS RESET TO DEFAULTS  ║");
   log("╚════════════════════════════════════════╝");
+  log("Channel: Reset | Command: RESET | Position: " + String(getDisplayAngle()));
 }
 void setup() {
   Serial.begin(115200);

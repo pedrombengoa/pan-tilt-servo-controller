@@ -9,6 +9,7 @@ import android.content.Context.BLUETOOTH_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.drawable.VectorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -26,12 +27,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -39,14 +35,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bluetoothAdapter: BluetoothAdapter
     private lateinit var btnConnect: ImageButton
     private lateinit var btnPlayPause: MaterialButton
-    private lateinit var compassNeedle: ImageView
+    private lateinit var speedometer: ImageView
     private lateinit var tvAngle: TextView
     private lateinit var tvStatus: TextView
 
     private val handler = Handler(Looper.getMainLooper())
     private var isHolding = false
     private var isAutopan = false
-    private var pollingJob: Job? = null
     private var currentAngle: Int = 90
 
     @SuppressLint("ClickableViewAccessibility")
@@ -58,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         btnConnect = findViewById(R.id.btnConnect)
-        compassNeedle = findViewById(R.id.compassNeedle)
+        speedometer = findViewById(R.id.speedometer)
         tvAngle = findViewById(R.id.tvAngle)
         tvStatus = findViewById(R.id.tvStatus)
         val btnSkipPrevious: MaterialButton = findViewById(R.id.btnSkipPrevious)
@@ -70,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         bluetoothAdapter = bluetoothManager.adapter
 
         observeBluetoothState()
-        updateAngleUI()
+        updateAngleUI(currentAngle)
         updatePipParams()
 
         btnConnect.setOnClickListener {
@@ -96,8 +91,6 @@ class MainActivity : AppCompatActivity() {
             updatePlayPauseButton()
             if (isAutopan) {
                 BluetoothConnection.sendCommand("AUTOPAN")
-            } else {
-                BluetoothConnection.sendCommand("P$currentAngle")
             }
         }
 
@@ -129,16 +122,15 @@ class MainActivity : AppCompatActivity() {
         BluetoothConnection.isConnected.observe(this) { isConnected ->
             updateButtonState(isConnected)
             tvStatus.text = if (isConnected) "Status: Connected" else "Status: Disconnected"
-            if (isConnected) {
-                startPolling()
-            } else {
-                pollingJob?.cancel()
-            }
         }
 
-        BluetoothConnection.messages.observe(this) {
-            if (it.startsWith("CAL_X")) {
-                parseAngle(it)
+        BluetoothConnection.messages.observe(this) { message ->
+            if (message.contains("Position: ")) {
+                val position = message.substringAfter("Position: ").trim().toIntOrNull()
+                if (position != null) {
+                    currentAngle = position
+                    updateAngleUI(currentAngle)
+                }
             }
         }
 
@@ -151,32 +143,11 @@ class MainActivity : AppCompatActivity() {
         btnPlayPause.setIconResource(if (isAutopan) R.drawable.ic_pause else R.drawable.ic_play_arrow)
     }
 
-    private fun startPolling() {
-        if (BluetoothConnection.isConnected.value != true) return
-        pollingJob?.cancel()
-        pollingJob = lifecycleScope.launch(Dispatchers.IO) {
-            while (true) {
-                BluetoothConnection.sendCommand("INFO")
-                delay(1000)
-            }
-        }
-    }
-
-    private fun parseAngle(settings: String?) {
-        if (settings.isNullOrBlank()) return
-
-        val settingsMap = settings.split(",").mapNotNull { part ->
-            val pair = part.split(":")
-            if (pair.size == 2) pair[0].trim() to pair[1].trim() else null
-        }.toMap()
-
-        currentAngle = settingsMap["CAL_N"]?.toIntOrNull() ?: currentAngle
-        updateAngleUI()
-    }
-
-    private fun updateAngleUI() {
-        tvAngle.text = "Current Angle: $currentAngle°"
-        compassNeedle.rotation = currentAngle.toFloat()
+    private fun updateAngleUI(position: Int) {
+        tvAngle.text = "Current Angle: $position°"
+        val speed = position / 180f // Normalize to 0-1 range
+        val rotation = (speed * 180) - 90 // Map to -90 to 90 range
+        speedometer.rotation = rotation
     }
 
     override fun onUserLeaveHint() {
