@@ -37,6 +37,7 @@ int currentAngle = 90;
 bool autoPanningActive = false;
 int autoDirection = 1;          // 1 = right (+), -1 = left (-)
 bool servoReversed = true;      // Set to true if servo is installed backwards
+int lastManualDirection = 0;    // 1 = right, -1 = left, 0 = none
 // track last button state to avoid spurious toggles at startup
 bool lastButton = HIGH;
 // ── Forward declarations ──────────────────────────────
@@ -61,6 +62,7 @@ void resetSettings() {
   // Disable auto panning
   autoPanningActive = false;
   autoDirection = 1;
+  lastManualDirection = 0;
   
   log("\n╔════════════════════════════════════════╗");
   log("║  SETTINGS RESET TO DEFAULTS  ║");
@@ -155,6 +157,8 @@ void moveLeft(const String& source) {
   } else {
     currentAngle = constrain(currentAngle - movementSpeed, 0, 180);
   }
+  // record manual movement direction (left = -1)
+  lastManualDirection = -1;
   servoPan.write(currentAngle);
   log("Channel: " + source + " | Command: LEFT | Position: " + String(getDisplayAngle()));
 }
@@ -165,6 +169,8 @@ void moveRight(const String& source) {
   } else {
     currentAngle = constrain(currentAngle + movementSpeed, 0, 180);
   }
+  // record manual movement direction (right = 1)
+  lastManualDirection = 1;
   servoPan.write(currentAngle);
   log("Channel: " + source + " | Command: RIGHT | Position: " + String(getDisplayAngle()));
 }
@@ -191,7 +197,11 @@ void processBTCommands() {
     log("Reset to defaults");
   }
   else if (cmd == "AUTOPAN") {
-    autoPanningActive = !autoPanningActive;
+    bool newState = !autoPanningActive;
+    autoPanningActive = newState;
+    if (newState && lastManualDirection != 0) {
+      autoDirection = servoReversed ? -lastManualDirection : lastManualDirection;
+    }
     log(autoPanningActive ? "AUTO PANNING → ON" : "AUTO PANNING → OFF");
   }
   else {
@@ -223,7 +233,11 @@ void processJoystickCommands() {
   
   if (!buttonNow && lastButton) {
     if (!longPressTriggered && (millis() - buttonPressStart) < LONG_PRESS_DURATION) {
-      autoPanningActive = !autoPanningActive;
+      bool newState = !autoPanningActive;
+      autoPanningActive = newState;
+      if (newState && lastManualDirection != 0) {
+        autoDirection = servoReversed ? -lastManualDirection : lastManualDirection;
+      }
       log(autoPanningActive ? "AUTO PANNING → ON" : "AUTO PANNING → OFF");
     }
   }
