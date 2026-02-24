@@ -2,6 +2,7 @@
 #include "BluetoothSerial.h"   // ← added
 
 Servo servoPan;
+Servo servoTilt;
 BluetoothSerial SerialBT;      // ← added
 
 // ── Message Queue for BT to prevent congestion ─────
@@ -12,8 +13,10 @@ int queueTail = 0;
 int queueSize = 0;
 
 const int pinVRx = 34;
+const int pinVRy = 35;        // Joystick Y (change if your wiring differs)
 const int pinSW = 14;           // Joystick button
 const int pinServoPan = 18;
+const int pinServoTilt = 19;   // Tilt servo pin
 
 // ── Long press detection ───────────────────────────────
 const unsigned long LONG_PRESS_DURATION = 2000;  // 2 seconds for long press
@@ -22,21 +25,24 @@ bool longPressTriggered = false;
 
 // ── Default calibration values ────────────────────────
 const int DEFAULT_CENTRO_X = 1928;
+const int DEFAULT_CENTRO_Y = 1928;
 const int DEFAULT_DEADZONE = 60;
 const int DEFAULT_NEUTRAL = 90;
 const int DEFAULT_MOVEMENT_SPEED = 1;
 
 // ── Calibration ───────────────────────────────────────
 int centroX = DEFAULT_CENTRO_X;
+int centroY = DEFAULT_CENTRO_Y;
 int deadzone = DEFAULT_DEADZONE;
 int neutral = DEFAULT_NEUTRAL;
 int movementSpeed = DEFAULT_MOVEMENT_SPEED;
 
 // ── State variables ───────────────────────────────────
 int currentAngle = 90;
+int currentTilt = 90;
 bool autoPanningActive = false;
 int autoDirection = 1;          // 1 = right (+), -1 = left (-)
-bool servoReversed = true;      // Set to true if servo is installed backwards
+bool servoReversed = false;      // Set to true if servo is installed backwards
 int lastManualDirection = 0;    // 1 = right, -1 = left, 0 = none
 // track last button state to avoid spurious toggles at startup
 bool lastButton = HIGH;
@@ -44,7 +50,10 @@ bool lastButton = HIGH;
 void log(const String& message);
 void moveLeft(const String& source);
 void moveRight(const String& source);
+void moveUp(const String& source);
+void moveDown(const String& source);
 int getDisplayAngle();
+int getDisplayTiltAngle();
 void processBTCommands();
 void processConfigCommands(const String& cmd);
 void processJoystickCommands();
@@ -58,6 +67,8 @@ void resetSettings() {
   // Reset servo position to neutral
   currentAngle = neutral;
   servoPan.write(neutral);
+  currentTilt = neutral;
+  servoTilt.write(neutral);
   
   // Disable auto panning
   autoPanningActive = false;
@@ -89,7 +100,15 @@ void setup() {
 
   servoPan.setPeriodHertz(50);
   servoPan.attach(pinServoPan, 500, 2400);
+  servoTilt.setPeriodHertz(50);
+  servoTilt.attach(pinServoTilt, 500, 2400);
   servoPan.write(neutral);
+  servoTilt.write(neutral);
+  if (servoTilt.attached()) {
+    log("Tilt servo attached on pin: " + String(pinServoTilt));
+  } else {
+    log("Warning: Tilt servo not attached (check pin/wiring)");
+  }
   
   log("Ready. Press button to toggle auto slow panning.");
   log("Move joystick significantly → auto mode disabled.");
@@ -147,6 +166,10 @@ int getDisplayAngle() {
   }
 }
 
+int getDisplayTiltAngle() {
+  return currentTilt;
+}
+
 // ──────────────────────────────────────────────────────────────
 // ── Movement Methods ───────────────────────────────────────────
 // ──────────────────────────────────────────────────────────────
@@ -175,6 +198,18 @@ void moveRight(const String& source) {
   log("Channel: " + source + " | Command: RIGHT | Position: " + String(getDisplayAngle()));
 }
 
+void moveUp(const String& source) {
+  currentTilt = constrain(currentTilt - movementSpeed, 0, 180);
+  servoTilt.write(currentTilt);
+  log("Channel: " + source + " | Command: UP | Position: " + String(getDisplayTiltAngle()));
+}
+
+void moveDown(const String& source) {
+  currentTilt = constrain(currentTilt + movementSpeed, 0, 180);
+  servoTilt.write(currentTilt);
+  log("Channel: " + source + " | Command: DOWN | Position: " + String(getDisplayTiltAngle()));
+}
+
 // ──────────────────────────────────────────────────────────────
 // ── Bluetooth Command Processors ───────────────────────────────
 // ──────────────────────────────────────────────────────────────
@@ -191,6 +226,26 @@ void processBTCommands() {
   }
   else if (cmd == "RIGHT") {
     moveRight("bluetooth");
+  }
+  else if (cmd == "UP") {
+    moveUp("bluetooth");
+  }
+  else if (cmd == "DOWN") {
+    moveDown("bluetooth");
+  }
+  else if (cmd == "TILTSWEEP") {
+    // quick sweep for testing tilt movement
+    for (int p = 0; p <= 180; p += 30) {
+      servoTilt.write(p);
+      log("Channel: Test | Command: TILTSWEEP | Position: " + String(p));
+      delay(150);
+    }
+    for (int p = 180; p >= 0; p -= 30) {
+      servoTilt.write(p);
+      log("Channel: Test | Command: TILTSWEEP | Position: " + String(p));
+      delay(150);
+    }
+    servoTilt.write(neutral);
   }
   else if (cmd == "RESET") {
     resetSettings();
@@ -213,6 +268,10 @@ void processJoystickCommands() {
   // ── Read inputs ─────────────────────────────────────
   int valorX = analogRead(pinVRx);
   int distance = abs(valorX - centroX);
+
+  // Read Y axis for tilt (if wired)
+  int valorY = analogRead(pinVRy);
+  int distanceY = abs(valorY - centroY);
 
   // ── Button handling (toggle auto mode / long press to reset) ──
   // use global `lastButton` initialized in setup to avoid startup toggles
@@ -245,18 +304,32 @@ void processJoystickCommands() {
 
   int currentDeadzone = autoPanningActive ? 200 : deadzone;
   
-  // ── Joystick movement disables auto mode ────────────
-  if (distance > currentDeadzone) {
+  // ── Joystick movement disables auto mode (handle pan and tilt independently) ────────────
+  bool panMoved = (distance > currentDeadzone);
+  bool tiltMoved = (distanceY > currentDeadzone);
+
+  if (panMoved || tiltMoved) {
     if (autoPanningActive) {
       log("Joystick moved → AUTO PANNING DISABLED");
       autoPanningActive = false;
     }
 
-    // Manual control
-    if (valorX < centroX) {
-      moveLeft("Joystick");
-    } else {
-      moveRight("Joystick");
+    // Manual control (pan)
+    if (panMoved) {
+      if (valorX < centroX) {
+        moveLeft("Joystick");
+      } else {
+        moveRight("Joystick");
+      }
+    }
+
+    // Manual control (tilt)
+    if (tiltMoved) {
+      if (valorY < centroY) {
+        moveUp("Joystick");
+      } else {
+        moveDown("Joystick");
+      }
     }
   }
 

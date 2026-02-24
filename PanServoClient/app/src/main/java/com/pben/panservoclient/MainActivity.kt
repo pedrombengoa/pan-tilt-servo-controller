@@ -38,6 +38,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var speedometer: ImageView
     private lateinit var tvAngle: TextView
     private lateinit var tvStatus: TextView
+    private lateinit var btnUp: MaterialButton
+    private lateinit var btnDown: MaterialButton
 
     private val handler = Handler(Looper.getMainLooper())
     private var isHolding = false
@@ -60,6 +62,8 @@ class MainActivity : AppCompatActivity() {
         btnPlayPause = findViewById(R.id.btnPlayPause)
         val btnStop: MaterialButton = findViewById(R.id.btnStop)
         val btnSkipNext: MaterialButton = findViewById(R.id.btnSkipNext)
+        btnUp = findViewById(R.id.btnUp)
+        btnDown = findViewById(R.id.btnDown)
 
         val bluetoothManager = getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bluetoothManager.adapter
@@ -98,6 +102,14 @@ class MainActivity : AppCompatActivity() {
             isAutopan = false
             updatePlayPauseButton()
             BluetoothConnection.sendCommand("RESET")
+        }
+
+        btnUp.setOnClickListener {
+            BluetoothConnection.sendCommand("UP")
+        }
+
+        btnDown.setOnClickListener {
+            BluetoothConnection.sendCommand("DOWN")
         }
 
         requestBluetoothPermission()
