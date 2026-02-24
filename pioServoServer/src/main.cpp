@@ -42,8 +42,10 @@ int currentAngle = 90;
 int currentTilt = 90;
 bool autoPanningActive = false;
 int autoDirection = 1;          // 1 = right (+), -1 = left (-)
-bool servoReversed = false;      // Set to true if servo is installed backwards
+bool panServoReversed = true;   // Set to true if PAN servo is installed backwards (affects left/right only)
+bool tiltServoReversed = true; // Set to true if TILT servo is installed backwards (affects up/down only)
 int lastManualDirection = 0;    // 1 = right, -1 = left, 0 = none
+bool powerToggle = true;        // Master power toggle - disables all commands when false
 // track last button state to avoid spurious toggles at startup
 bool lastButton = HIGH;
 // ── Forward declarations ──────────────────────────────
@@ -159,11 +161,7 @@ void logSerial(const String& message) {
 // ──────────────────────────────────────────────────────────────
 
 int getDisplayAngle() {
-  if (servoReversed) {
-    return 180 - currentAngle;
-  } else {
-    return currentAngle;
-  }
+  return currentAngle;
 }
 
 int getDisplayTiltAngle() {
@@ -175,7 +173,7 @@ int getDisplayTiltAngle() {
 // ──────────────────────────────────────────────────────────────
 
 void moveLeft(const String& source) {
-  if (servoReversed) {
+  if (panServoReversed) {
     currentAngle = constrain(currentAngle + movementSpeed, 0, 180);
   } else {
     currentAngle = constrain(currentAngle - movementSpeed, 0, 180);
@@ -187,7 +185,7 @@ void moveLeft(const String& source) {
 }
 
 void moveRight(const String& source) {
-  if (servoReversed) {
+  if (panServoReversed) {
     currentAngle = constrain(currentAngle - movementSpeed, 0, 180);
   } else {
     currentAngle = constrain(currentAngle + movementSpeed, 0, 180);
@@ -199,13 +197,21 @@ void moveRight(const String& source) {
 }
 
 void moveUp(const String& source) {
-  currentTilt = constrain(currentTilt - movementSpeed, 0, 180);
+  if (tiltServoReversed) {
+    currentTilt = constrain(currentTilt + movementSpeed, 0, 180);
+  } else {
+    currentTilt = constrain(currentTilt - movementSpeed, 0, 180);
+  }
   servoTilt.write(currentTilt);
   log("Channel: " + source + " | Command: UP | Position: " + String(getDisplayTiltAngle()));
 }
 
 void moveDown(const String& source) {
-  currentTilt = constrain(currentTilt + movementSpeed, 0, 180);
+  if (tiltServoReversed) {
+    currentTilt = constrain(currentTilt - movementSpeed, 0, 180);
+  } else {
+    currentTilt = constrain(currentTilt + movementSpeed, 0, 180);
+  }
   servoTilt.write(currentTilt);
   log("Channel: " + source + " | Command: DOWN | Position: " + String(getDisplayTiltAngle()));
 }
@@ -219,6 +225,24 @@ void processBTCommands() {
   
   String cmd = SerialBT.readStringUntil('\n');
   cmd.trim();
+
+  // ── Power toggle command (always available) ─────────
+  if (cmd == "POWER") {
+    powerToggle = !powerToggle;
+    if (powerToggle) {
+      log("POWER → ON");
+    } else {
+      autoPanningActive = false;
+      log("POWER → OFF (all commands disabled)");
+    }
+    return;
+  }
+
+  // ── Early exit if power is off ─────────────────────
+  if (!powerToggle) {
+    log("Device powered OFF - command ignored: " + cmd);
+    return;
+  }
 
   // ── Pan control commands ────────────────────────────
   if (cmd == "LEFT") {
@@ -255,7 +279,7 @@ void processBTCommands() {
     bool newState = !autoPanningActive;
     autoPanningActive = newState;
     if (newState && lastManualDirection != 0) {
-      autoDirection = servoReversed ? -lastManualDirection : lastManualDirection;
+      autoDirection = lastManualDirection;
     }
     log(autoPanningActive ? "AUTO PANNING → ON" : "AUTO PANNING → OFF");
   }
@@ -265,6 +289,11 @@ void processBTCommands() {
 }
 
 void processJoystickCommands() {
+  // ── Early exit if power is off ─────────────────────
+  if (!powerToggle) {
+    return;
+  }
+
   // ── Read inputs ─────────────────────────────────────
   int valorX = analogRead(pinVRx);
   int distance = abs(valorX - centroX);
@@ -295,7 +324,7 @@ void processJoystickCommands() {
       bool newState = !autoPanningActive;
       autoPanningActive = newState;
       if (newState && lastManualDirection != 0) {
-        autoDirection = servoReversed ? -lastManualDirection : lastManualDirection;
+        autoDirection = lastManualDirection;
       }
       log(autoPanningActive ? "AUTO PANNING → ON" : "AUTO PANNING → OFF");
     }
@@ -309,7 +338,7 @@ void processJoystickCommands() {
   bool tiltMoved = (distanceY > currentDeadzone);
 
   if (panMoved || tiltMoved) {
-    if (autoPanningActive) {
+    if (autoPanningActive && panMoved) {
       log("Joystick moved → AUTO PANNING DISABLED");
       autoPanningActive = false;
     }
@@ -317,9 +346,9 @@ void processJoystickCommands() {
     // Manual control (pan)
     if (panMoved) {
       if (valorX < centroX) {
-        moveLeft("Joystick");
-      } else {
         moveRight("Joystick");
+      } else {
+        moveLeft("Joystick");
       }
     }
 

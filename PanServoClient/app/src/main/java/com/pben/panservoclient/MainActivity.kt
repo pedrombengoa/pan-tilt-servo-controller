@@ -81,12 +81,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnSkipPrevious.setOnTouchListener { _, event ->
-            handleTouch(event, -1)
+            handleContinuousPress(event, "LEFT")
             true
         }
 
         btnSkipNext.setOnTouchListener { _, event ->
-            handleTouch(event, 1)
+            handleContinuousPress(event, "RIGHT")
             true
         }
 
@@ -104,12 +104,14 @@ class MainActivity : AppCompatActivity() {
             BluetoothConnection.sendCommand("RESET")
         }
 
-        btnUp.setOnClickListener {
-            BluetoothConnection.sendCommand("UP")
+        btnUp.setOnTouchListener { _, event ->
+            handleContinuousPress(event, "UP")
+            true
         }
 
-        btnDown.setOnClickListener {
-            BluetoothConnection.sendCommand("DOWN")
+        btnDown.setOnTouchListener { _, event ->
+            handleContinuousPress(event, "DOWN")
+            true
         }
 
         requestBluetoothPermission()
@@ -179,14 +181,14 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.controlsCard).visibility = if (isInPictureInPictureMode) View.GONE else View.VISIBLE
     }
 
-    private fun handleTouch(event: MotionEvent, direction: Int) {
+    private fun handleContinuousPress(event: MotionEvent, command: String) {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 isHolding = true
                 handler.post(object : Runnable {
                     override fun run() {
                         if (isHolding) {
-                            BluetoothConnection.sendCommand(if (direction == -1) "LEFT" else "RIGHT")
+                            BluetoothConnection.sendCommand(command)
                             handler.postDelayed(this, 100)
                         }
                     }
