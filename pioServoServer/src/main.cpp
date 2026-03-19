@@ -26,7 +26,7 @@ bool longPressTriggered = false;
 // ── Default calibration values ────────────────────────
 const int DEFAULT_CENTRO_X = 1928;
 const int DEFAULT_CENTRO_Y = 1928;
-const int DEFAULT_DEADZONE = 60;
+const int DEFAULT_DEADZONE = 800;
 const int DEFAULT_NEUTRAL = 90;
 const int DEFAULT_MOVEMENT_SPEED = 1;
 
@@ -43,7 +43,7 @@ int currentTilt = 90;
 bool autoPanningActive = false;
 int autoDirection = 1;          // 1 = right (+), -1 = left (-)
 bool panServoReversed = true;   // Set to true if PAN servo is installed backwards (affects left/right only)
-bool tiltServoReversed = true; // Set to true if TILT servo is installed backwards (affects up/down only)
+bool tiltServoReversed = false; // Set to true if TILT servo is installed backwards (affects up/down only)
 int lastManualDirection = 0;    // 1 = right, -1 = left, 0 = none
 bool powerToggle = true;        // Master power toggle - disables all commands when false
 // track last button state to avoid spurious toggles at startup
@@ -114,6 +114,12 @@ void setup() {
   
   log("Ready. Press button to toggle auto slow panning.");
   log("Move joystick significantly → auto mode disabled.");
+
+  // ── Auto-calibrate joystick center from actual ADC readings ──
+  centroX = analogRead(pinVRx);
+  centroY = analogRead(pinVRy);
+  log("[CAL] centroX=" + String(centroX) + " centroY=" + String(centroY));
+
   delay(1000);
 }
 
@@ -301,6 +307,7 @@ void processJoystickCommands() {
   // Read Y axis for tilt (if wired)
   int valorY = analogRead(pinVRy);
   int distanceY = abs(valorY - centroY);
+
 
   // ── Button handling (toggle auto mode / long press to reset) ──
   // use global `lastButton` initialized in setup to avoid startup toggles
