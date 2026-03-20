@@ -1,16 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.PanServoClient" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+    <!-- Base application theme (night). -->
+    <style name="Theme.PanServoClient" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Neumorphic colors -->
+        <item name="colorPrimary">@color/neumorphic_accent_blue</item>
+        <item name="colorPrimaryVariant">@color/neumorphic_dark_shadow</item>
+        <item name="colorOnPrimary">@color/text_main</item>
+        <item name="colorSecondary">@color/neumorphic_accent_blue</item>
+        <item name="colorOnSecondary">@color/text_main</item>
+        <item name="android:colorBackground">@color/neumorphic_background</item>
+        <item name="android:windowBackground">@color/neumorphic_background</item>
+        <!-- Light status bar with dark icons -->
+        <item name="android:statusBarColor">@color/neumorphic_background</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>

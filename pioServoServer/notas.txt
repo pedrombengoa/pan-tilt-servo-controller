@@ -13,7 +13,7 @@ Para el joystick
 
 El codigo dice 
 
-const int pinVRx = 34; GPIO34 ->  Izquierda 16 -> Mov tilt cable verde joy
+const int pinVRx = 34; GPIO34 ->  Izquierda 14 -> Mov tilt cable verde joy
 const int pinVRy = 35; GPIO35 ->  Izquierda 15 -> Mov pan, cable violeta joy
 const int pinSW = 14;  GPIO14 ->  Izquierda 8  -> Boton joy, cable amarillo
 
@@ -29,6 +29,15 @@ Izquierda 1 -> 5v cable rojo
 Izquierda 6 -> GND
 
 Izquierda 19 -> 3.3v cable rojo
+
+
+
+Allowed commands:
+
+move_left, move_right, move_up, move_down_ move_auto
+
+reset
+info
 
 
 

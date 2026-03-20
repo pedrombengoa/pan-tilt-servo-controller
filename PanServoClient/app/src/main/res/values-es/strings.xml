@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">PanServoClient</string>
+    <string name="header_title">Control de Servo\nde Precisión</string>
+    <string name="status_label">Estado:</string>
+    <string name="status_disconnected">Desconectado</string>
+    <string name="status_connected">Conectado</string>
+    <string name="bluetooth_toggle">Alternar Bluetooth</string>
+    <string name="move">Mover</string>
+    <string name="pan">Panorámica</string>
+    <string name="pan_arrows">←  →</string>
+    <string name="tilt">Inclinación</string>
+    <string name="tilt_arrow_up">↑</string>
+    <string name="servo_knob">Perilla de posición del servo</string>
+    <string name="pan_angle">Ángulo panorámico</string>
+    <string name="tilt_angle">Ángulo de inclinación</string>
+    <string name="default_angle">90°</string>
+    <string name="angle_format">%d°</string>
+    <string name="pan_minus">Panorámica menos</string>
+    <string name="pan_plus">Panorámica más</string>
+    <string name="tilt_minus">Inclinación menos</string>
+    <string name="tilt_plus">Inclinación más</string>
+    <string name="previous">Anterior</string>
+    <string name="play">Reproducir/Pausar</string>
+    <string name="play_pause">Reproducir/Pausar</string>
+    <string name="pause">Pausar</string>
+    <string name="stop">Detener</string>
+    <string name="next">Siguiente</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Configuración</string>
+    <string name="bluetooth_log">Registro Bluetooth</string>
+    <string name="clear_logs">Borrar registros</string>
+    <string name="status_connected_full">Estado: Conectado</string>
+    <string name="status_disconnected_full">Estado: Desconectado</string>
+
+    <!-- Permissions -->
+    <string name="permission_required">Permiso requerido</string>
+
+    <!-- Bluetooth errors -->
+    <string name="error_bluetooth_permission">Permiso de Bluetooth no concedido.</string>
+    <string name="error_device_not_found">%s no encontrado. Emparéjelo primero.</string>
+    <string name="error_connecting">Error al conectar: %s</string>
+    <string name="error_connection_lost">Conexión perdida: %s</string>
+    <string name="error_not_connected">No conectado.</string>
+    <string name="error_sending_command">Error al enviar comando: %s</string>
+    <string name="error_prefix">ERROR: %s</string>
+
+    <!-- Language selector -->
+    <string name="language_label">Idioma</string>
+    <string name="language_english">English</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_system">Predeterminado del sistema</string>
+</resources>
+

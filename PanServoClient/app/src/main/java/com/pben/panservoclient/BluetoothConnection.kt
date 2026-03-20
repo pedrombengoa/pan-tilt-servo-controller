@@ -1,5 +1,6 @@
 package com.pben.panservoclient
 
+import android.app.Application
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -27,6 +28,7 @@ object BluetoothConnection {
     var bluetoothSocket: BluetoothSocket? = null
     private var outputStream: OutputStream? = null
     private var inputStream: InputStream? = null
+    private lateinit var appContext: Application
 
     val isConnected = MutableLiveData(false)
     val messages = MutableLiveData<String>()
@@ -39,14 +41,22 @@ object BluetoothConnection {
     private val hc05Uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
     private const val deviceName = "PanTilt"
 
+    fun init(application: Application) {
+        appContext = application
+    }
+
+    private fun getString(resId: Int, vararg args: Any): String {
+        return appContext.getString(resId, *args)
+    }
+
     fun connect(context: Context, adapter: BluetoothAdapter) {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            errors.postValue("Bluetooth permission not granted.")
+            errors.postValue(getString(R.string.error_bluetooth_permission))
             return
         }
         val device: BluetoothDevice? = adapter.bondedDevices.find { it.name == deviceName }
         if (device == null) {
-            errors.postValue("$deviceName not found. Please pair first.")
+            errors.postValue(getString(R.string.error_device_not_found, deviceName))
             return
         }
 
@@ -59,12 +69,12 @@ object BluetoothConnection {
                 inputStream = socket.inputStream
                 isConnected.postValue(true)
                 withContext(Dispatchers.Main) {
-                    sendCommand("INFO")
+                    sendCommand(ServoCommand.INFO)
                 }
                 startListening()
             } catch (e: IOException) {
                 isConnected.postValue(false)
-                errors.postValue("Error connecting: ${e.message}")
+                errors.postValue(getString(R.string.error_connecting, e.message ?: ""))
             }
         }
     }
@@ -95,9 +105,9 @@ object BluetoothConnection {
                 }
             } catch (e: IOException) {
                 if (isActive) {
-                    val errorMsg = "Connection lost: ${e.message}"
+                    val errorMsg = getString(R.string.error_connection_lost, e.message ?: "")
                     errors.postValue(errorMsg)
-                    logCache.add("ERROR: $errorMsg")
+                    logCache.add(getString(R.string.error_prefix, errorMsg))
                     isConnected.postValue(false)
                 }
             }
@@ -109,20 +119,24 @@ object BluetoothConnection {
         listeningJob = null
     }
 
-    fun sendCommand(command: String) {
+    fun sendCommand(command: ServoCommand) {
+        sendCommand(command.value)
+    }
+
+    private fun sendCommand(command: String) {
         if (isConnected.value != true) {
-            val errorMsg = "Not connected."
+            val errorMsg = getString(R.string.error_not_connected)
             errors.postValue(errorMsg)
-            logCache.add("ERROR: $errorMsg")
+            logCache.add(getString(R.string.error_prefix, errorMsg))
             return
         }
         scope.launch {
             try {
                 outputStream?.write("$command\n".toByteArray())
             } catch (e: IOException) {
-                val errorMsg = "Error sending command: ${e.message}"
+                val errorMsg = getString(R.string.error_sending_command, e.message ?: "")
                 errors.postValue(errorMsg)
-                logCache.add("ERROR: $errorMsg")
+                logCache.add(getString(R.string.error_prefix, errorMsg))
             }
         }
     }

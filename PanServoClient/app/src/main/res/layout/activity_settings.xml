@@ -13,8 +13,43 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        app:title="Bluetooth Log"
+        app:title="@string/settings_title"
         app:titleTextColor="@android:color/white" />
+
+    <!-- Language selector -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/language_label"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+
+        <Spinner
+            android:id="@+id/spinnerLanguage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="160dp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#CCCCCC" />
+
+    <!-- Bluetooth Log section title -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/bluetooth_log"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
     <TextView
         android:id="@+id/tvSettingsStatus"
@@ -23,14 +58,14 @@
         android:padding="16dp"
         android:gravity="center"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-        tools:text="Status: Connected" />
+        tools:text="@string/status_connected_full" />
 
     <Button
         android:id="@+id/btnClearLogs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="Clear Logs" />
+        android:text="@string/clear_logs" />
 
     <ScrollView
         android:layout_width="match_parent"

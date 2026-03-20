@@ -258,10 +258,10 @@ void processBTCommands() {
     moveRight("bluetooth");
   }
   else if (cmd == "UP") {
-    moveUp("bluetooth");
+    moveDown("bluetooth");
   }
   else if (cmd == "DOWN") {
-    moveDown("bluetooth");
+    moveUp("bluetooth");
   }
   else if (cmd == "TILTSWEEP") {
     // quick sweep for testing tilt movement

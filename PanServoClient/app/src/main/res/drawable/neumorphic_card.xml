@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Dark Shadow -->
+    <item android:left="6dp" android:top="6dp" android:right="0dp" android:bottom="0dp">
+        <shape>
+            <corners android:radius="24dp" />
+            <solid android:color="@color/neumorphic_dark_shadow" />
+        </shape>
+    </item>
+    <!-- Light Shadow -->
+    <item android:left="0dp" android:top="0dp" android:right="6dp" android:bottom="6dp">
+        <shape>
+            <corners android:radius="24dp" />
+            <solid android:color="@color/neumorphic_light_shadow" />
+        </shape>
+    </item>
+    <!-- Top Surface -->
+    <item android:left="3dp" android:top="3dp" android:right="3dp" android:bottom="3dp">
+        <shape>
+            <corners android:radius="24dp" />
+            <solid android:color="@color/neumorphic_background" />
+        </shape>
+    </item>
+</layer-list>

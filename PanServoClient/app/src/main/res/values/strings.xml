@@ -1,3 +1,53 @@
 <resources>
     <string name="app_name">PanServoClient</string>
+    <string name="header_title">Precision Servo\nController</string>
+    <string name="status_label">Status:</string>
+    <string name="status_disconnected">Disconnected</string>
+    <string name="status_connected">Connected</string>
+    <string name="bluetooth_toggle">Bluetooth toggle</string>
+    <string name="move">Move</string>
+    <string name="pan">Pan</string>
+    <string name="pan_arrows">←  →</string>
+    <string name="tilt">Tilt</string>
+    <string name="tilt_arrow_up">↑</string>
+    <string name="servo_knob">Servo position knob</string>
+    <string name="pan_angle">Pan Angle</string>
+    <string name="tilt_angle">Tilt Angle</string>
+    <string name="default_angle">90°</string>
+    <string name="angle_format">%d°</string>
+    <string name="pan_minus">Pan minus</string>
+    <string name="pan_plus">Pan plus</string>
+    <string name="tilt_minus">Tilt minus</string>
+    <string name="tilt_plus">Tilt plus</string>
+    <string name="previous">Previous</string>
+    <string name="play">Play/Pause</string>
+    <string name="play_pause">Play/Pause</string>
+    <string name="pause">Pause</string>
+    <string name="stop">Stop</string>
+    <string name="next">Next</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="bluetooth_log">Bluetooth Log</string>
+    <string name="clear_logs">Clear Logs</string>
+    <string name="status_connected_full">Status: Connected</string>
+    <string name="status_disconnected_full">Status: Disconnected</string>
+
+    <!-- Permissions -->
+    <string name="permission_required">Permission required</string>
+
+    <!-- Bluetooth errors -->
+    <string name="error_bluetooth_permission">Bluetooth permission not granted.</string>
+    <string name="error_device_not_found">%s not found. Please pair first.</string>
+    <string name="error_connecting">Error connecting: %s</string>
+    <string name="error_connection_lost">Connection lost: %s</string>
+    <string name="error_not_connected">Not connected.</string>
+    <string name="error_sending_command">Error sending command: %s</string>
+    <string name="error_prefix">ERROR: %s</string>
+
+    <!-- Language selector -->
+    <string name="language_label">Language</string>
+    <string name="language_english">English</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_system">System default</string>
 </resources>

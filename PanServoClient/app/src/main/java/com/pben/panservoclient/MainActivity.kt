@@ -9,7 +9,6 @@ import android.content.Context.BLUETOOTH_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.drawable.VectorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -27,19 +26,19 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import com.google.android.material.button.MaterialButton
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var bluetoothAdapter: BluetoothAdapter
     private lateinit var btnConnect: ImageButton
-    private lateinit var btnPlayPause: MaterialButton
+    private lateinit var btnPlayPause: ImageButton
     private lateinit var speedometer: ImageView
     private lateinit var tvAngle: TextView
+    private lateinit var tvTiltAngle: TextView
     private lateinit var tvStatus: TextView
-    private lateinit var btnUp: MaterialButton
-    private lateinit var btnDown: MaterialButton
+    private lateinit var btnUp: ImageButton
+    private lateinit var btnDown: ImageButton
 
     private val handler = Handler(Looper.getMainLooper())
     private var isHolding = false
@@ -49,6 +48,7 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        BluetoothConnection.init(application)
         setContentView(R.layout.activity_main)
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -57,11 +57,12 @@ class MainActivity : AppCompatActivity() {
         btnConnect = findViewById(R.id.btnConnect)
         speedometer = findViewById(R.id.speedometer)
         tvAngle = findViewById(R.id.tvAngle)
+        tvTiltAngle = findViewById(R.id.tvTiltAngle)
         tvStatus = findViewById(R.id.tvStatus)
-        val btnSkipPrevious: MaterialButton = findViewById(R.id.btnSkipPrevious)
+        val btnSkipPrevious: ImageButton = findViewById(R.id.btnSkipPrevious)
         btnPlayPause = findViewById(R.id.btnPlayPause)
-        val btnStop: MaterialButton = findViewById(R.id.btnStop)
-        val btnSkipNext: MaterialButton = findViewById(R.id.btnSkipNext)
+        val btnStop: ImageButton = findViewById(R.id.btnStop)
+        val btnSkipNext: ImageButton = findViewById(R.id.btnSkipNext)
         btnUp = findViewById(R.id.btnUp)
         btnDown = findViewById(R.id.btnDown)
 
@@ -81,12 +82,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnSkipPrevious.setOnTouchListener { _, event ->
-            handleContinuousPress(event, "LEFT")
+            handleContinuousPress(event, ServoCommand.LEFT)
             true
         }
 
         btnSkipNext.setOnTouchListener { _, event ->
-            handleContinuousPress(event, "RIGHT")
+            handleContinuousPress(event, ServoCommand.RIGHT)
             true
         }
 
@@ -94,25 +95,26 @@ class MainActivity : AppCompatActivity() {
             isAutopan = !isAutopan
             updatePlayPauseButton()
             if (isAutopan) {
-                BluetoothConnection.sendCommand("AUTOPAN")
+                BluetoothConnection.sendCommand(ServoCommand.AUTOPAN)
             }
         }
 
         btnStop.setOnClickListener {
             isAutopan = false
             updatePlayPauseButton()
-            BluetoothConnection.sendCommand("RESET")
+            BluetoothConnection.sendCommand(ServoCommand.RESET)
         }
 
         btnUp.setOnTouchListener { _, event ->
-            handleContinuousPress(event, "UP")
+            handleContinuousPress(event, ServoCommand.UP)
             true
         }
 
         btnDown.setOnTouchListener { _, event ->
-            handleContinuousPress(event, "DOWN")
+            handleContinuousPress(event, ServoCommand.DOWN)
             true
         }
+
 
         requestBluetoothPermission()
     }
@@ -135,7 +137,7 @@ class MainActivity : AppCompatActivity() {
     private fun observeBluetoothState() {
         BluetoothConnection.isConnected.observe(this) { isConnected ->
             updateButtonState(isConnected)
-            tvStatus.text = if (isConnected) "Status: Connected" else "Status: Disconnected"
+            tvStatus.text = if (isConnected) getString(R.string.status_connected) else getString(R.string.status_disconnected)
         }
 
         BluetoothConnection.messages.observe(this) { message ->
@@ -154,11 +156,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updatePlayPauseButton() {
-        btnPlayPause.setIconResource(if (isAutopan) R.drawable.ic_pause else R.drawable.ic_play_arrow)
+        btnPlayPause.setImageResource(if (isAutopan) R.drawable.ic_pause_white else R.drawable.ic_play_arrow_white)
     }
 
     private fun updateAngleUI(position: Int) {
-        tvAngle.text = "Current Angle: $position°"
+        tvAngle.text = getString(R.string.angle_format, position)
         val speed = position / 180f // Normalize to 0-1 range
         val rotation = (speed * 180) - 90 // Map to -90 to 90 range
         speedometer.rotation = rotation
@@ -181,7 +183,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.controlsCard).visibility = if (isInPictureInPictureMode) View.GONE else View.VISIBLE
     }
 
-    private fun handleContinuousPress(event: MotionEvent, command: String) {
+    private fun handleContinuousPress(event: MotionEvent, command: ServoCommand) {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 isHolding = true
@@ -204,7 +206,7 @@ class MainActivity : AppCompatActivity() {
         if (isGranted) {
             BluetoothConnection.connect(this, bluetoothAdapter)
         } else {
-            Toast.makeText(this, "Permission required", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.permission_required), Toast.LENGTH_SHORT).show()
         }
     }
 
