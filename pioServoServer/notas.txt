@@ -1,0 +1,36 @@
+
+
+
+
+
+Pinout
+
+Para el joystick
+
+
+
+
+
+El codigo dice 
+
+const int pinVRx = 34; GPIO34 ->  Izquierda 16 -> Mov tilt cable verde joy
+const int pinVRy = 35; GPIO35 ->  Izquierda 15 -> Mov pan, cable violeta joy
+const int pinSW = 14;  GPIO14 ->  Izquierda 8  -> Boton joy, cable amarillo
+
+const int pinServoPan = 18;	 GPIO18 -> Derecha 11 -> Señal el Pan
+const int pinServoTilt = 19; GPIO19 -> Derecha 12 -> Señal el Tilt
+
+
+
+
+Pines de la board (vista con el usb hacia abajo)
+
+Izquierda 1 -> 5v cable rojo
+Izquierda 6 -> GND
+
+Izquierda 19 -> 3.3v cable rojo
+
+
+
+
+
