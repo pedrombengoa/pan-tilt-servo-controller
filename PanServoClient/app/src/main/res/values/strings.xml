@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">PanServoClient</string>
-    <string name="header_title">Precision Servo\nController</string>
+    <string name="header_title">Pedrition Turret</string>
     <string name="status_label">Status:</string>
     <string name="status_disconnected">Disconnected</string>
     <string name="status_connected">Connected</string>

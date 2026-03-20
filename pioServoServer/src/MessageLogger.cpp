@@ -30,3 +30,60 @@ void MessageLogger::logSerial(const String& message) {
     Serial.println(message);
     Serial.flush();
 }
+
+void MessageLogger::logCommand(const String& channel, Command cmd, int position) {
+    log("Channel: " + channel + " | Command: " + commandToString(cmd) + " | Position: " + String(position));
+}
+
+void MessageLogger::logCommandSerial(const String& channel, Command cmd, int position) {
+    logSerial("Channel: " + channel + " | Command: " + commandToString(cmd) + " | Position: " + String(position));
+}
+
+void MessageLogger::logStartup() {
+    log("Bluetooth started! Connect from phone.");
+    logAvailableCommands();
+}
+
+void MessageLogger::logAvailableCommands() {
+    log("BT commands: " + String(commandToString(Command::LEFT)) + ", " +
+        commandToString(Command::RIGHT) + ", " +
+        commandToString(Command::UP) + ", " +
+        commandToString(Command::DOWN) + ", " +
+        commandToString(Command::RESET) + ", " +
+        commandToString(Command::AUTOPAN));
+}
+
+void MessageLogger::logServoStatus(int pin, bool attached) {
+    if (attached) {
+        log("Tilt servo attached on pin: " + String(pin));
+    } else {
+        log("Warning: Tilt servo not attached (check pin/wiring)");
+    }
+}
+
+void MessageLogger::logCalibration(int centroX, int centroY) {
+    log("[CAL] centroX=" + String(centroX) + " centroY=" + String(centroY));
+}
+
+void MessageLogger::logResetBanner(int position) {
+    log("\n╔════════════════════════════════════════╗");
+    log("║  SETTINGS RESET TO DEFAULTS  ║");
+    log("╚════════════════════════════════════════╝");
+    logCommand("Reset", Command::RESET, position);
+}
+
+void MessageLogger::logResetComplete() {
+    log("Reset to defaults");
+}
+
+void MessageLogger::logAutoPanState(bool active) {
+    log(active ? "AUTO PANNING → ON" : "AUTO PANNING → OFF");
+}
+
+void MessageLogger::logAutoPanDisabled() {
+    log("Joystick moved → AUTO PANNING DISABLED");
+}
+
+void MessageLogger::logUnknownCommand(const String& raw) {
+    log("Unknown command: " + raw);
+}

@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include "BluetoothSerial.h"
 #include "Config.h"
+#include "Command.h"
 
 class MessageLogger {
 public:
@@ -10,6 +11,19 @@ public:
     void log(const String& message);
     void logSerial(const String& message);
     void processQueue();
+
+    // Structured log methods
+    void logCommand(const String& channel, Command cmd, int position);
+    void logCommandSerial(const String& channel, Command cmd, int position);
+    void logStartup();
+    void logAvailableCommands();
+    void logServoStatus(int pin, bool attached);
+    void logCalibration(int centroX, int centroY);
+    void logResetBanner(int position);
+    void logResetComplete();
+    void logAutoPanState(bool active);
+    void logAutoPanDisabled();
+    void logUnknownCommand(const String& raw);
 
 private:
     BluetoothSerial& bt_;

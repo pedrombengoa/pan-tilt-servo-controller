@@ -14,47 +14,35 @@ void PanTiltController::begin() {
 
     bt_.begin("PanTilt");
 
-    logger_.log("Bluetooth started! Connect from phone.");
-    logger_.log("BT commands: LEFT, RIGHT, RESET, AUTOPAN, P0..P180, C = center, S = hold");
+    logger_.logStartup();
 
     joystick_.begin();
 
     pan_.begin(Config::PIN_SERVO_PAN, neutral_);
     tilt_.begin(Config::PIN_SERVO_TILT, neutral_);
 
-    if (tilt_.isAttached()) {
-        logger_.log("Tilt servo attached on pin: " + String(Config::PIN_SERVO_TILT));
-    } else {
-        logger_.log("Warning: Tilt servo not attached (check pin/wiring)");
-    }
+    logger_.logServoStatus(Config::PIN_SERVO_TILT, tilt_.isAttached());
 
     logger_.log("Ready. Press button to toggle auto slow panning.");
     logger_.log("Move joystick significantly → auto mode disabled.");
 
     joystick_.calibrate();
-    logger_.log("[CAL] centroX=" + String(joystick_.centroX()) + " centroY=" + String(joystick_.centroY()));
+    logger_.logCalibration(joystick_.centroX(), joystick_.centroY());
 
     delay(1000);
 }
 
 void PanTiltController::movePan(int direction, const String& source) {
     pan_.moveStep(direction, movementSpeed_);
-    if (direction > 0) {
-        lastManualDirection_ = 1;
-        logger_.log("Channel: " + source + " | Command: RIGHT | Position: " + String(pan_.angle()));
-    } else {
-        lastManualDirection_ = -1;
-        logger_.log("Channel: " + source + " | Command: LEFT | Position: " + String(pan_.angle()));
-    }
+    Command cmd = (direction > 0) ? Command::RIGHT : Command::LEFT;
+    lastManualDirection_ = (direction > 0) ? 1 : -1;
+    logger_.logCommand(source, cmd, pan_.angle());
 }
 
 void PanTiltController::moveTilt(int direction, const String& source) {
     tilt_.moveStep(direction, movementSpeed_);
-    if (direction > 0) {
-        logger_.log("Channel: " + source + " | Command: UP | Position: " + String(tilt_.angle()));
-    } else {
-        logger_.log("Channel: " + source + " | Command: DOWN | Position: " + String(tilt_.angle()));
-    }
+    Command cmd = (direction > 0) ? Command::UP : Command::DOWN;
+    logger_.logCommand(source, cmd, tilt_.angle());
 }
 
 void PanTiltController::resetSettings() {
@@ -69,53 +57,40 @@ void PanTiltController::resetSettings() {
     autoPanner_.reset();
     lastManualDirection_ = 0;
 
-    logger_.log("\n╔════════════════════════════════════════╗");
-    logger_.log("║  SETTINGS RESET TO DEFAULTS  ║");
-    logger_.log("╚════════════════════════════════════════╝");
-    logger_.log("Channel: Reset | Command: RESET | Position: " + String(pan_.angle()));
+    logger_.logResetBanner(pan_.angle());
 }
 
 void PanTiltController::processBTCommands() {
     if (!bt_.available()) return;
 
-    String cmd = bt_.readStringUntil('\n');
-    cmd.trim();
+    String raw = bt_.readStringUntil('\n');
+    raw.trim();
+    Command cmd = parseCommand(raw);
 
-    if (cmd == "LEFT") {
-        movePan(-1, "bluetooth");
-    }
-    else if (cmd == "RIGHT") {
-        movePan(1, "bluetooth");
-    }
-    else if (cmd == "UP") {
-        moveTilt(1, "bluetooth");   // BT UP → down (reversed per user config)
-    }
-    else if (cmd == "DOWN") {
-        moveTilt(-1, "bluetooth");  // BT DOWN → up (reversed per user config)
-    }
-    else if (cmd == "TILTSWEEP") {
-        for (int p = 0; p <= 180; p += 30) {
-            tilt_.writeTo(p);
-            logger_.log("Channel: Test | Command: TILTSWEEP | Position: " + String(p));
-            delay(150);
-        }
-        for (int p = 180; p >= 0; p -= 30) {
-            tilt_.writeTo(p);
-            logger_.log("Channel: Test | Command: TILTSWEEP | Position: " + String(p));
-            delay(150);
-        }
-        tilt_.writeTo(neutral_);
-    }
-    else if (cmd == "RESET") {
-        resetSettings();
-        logger_.log("Reset to defaults");
-    }
-    else if (cmd == "AUTOPAN") {
-        autoPanner_.toggle(lastManualDirection_);
-        logger_.log(autoPanner_.isActive() ? "AUTO PANNING → ON" : "AUTO PANNING → OFF");
-    }
-    else {
-        logger_.log("Unknown command: " + cmd);
+    switch (cmd) {
+        case Command::LEFT:
+            movePan(-1, "bluetooth");
+            break;
+        case Command::RIGHT:
+            movePan(1, "bluetooth");
+            break;
+        case Command::UP:
+            moveTilt(1, "bluetooth");
+            break;
+        case Command::DOWN:
+            moveTilt(-1, "bluetooth");
+            break;
+        case Command::RESET:
+            resetSettings();
+            logger_.logResetComplete();
+            break;
+        case Command::AUTOPAN:
+            autoPanner_.toggle(lastManualDirection_);
+            logger_.logAutoPanState(autoPanner_.isActive());
+            break;
+        case Command::UNKNOWN:
+            logger_.logUnknownCommand(raw);
+            break;
     }
 }
 
@@ -126,7 +101,7 @@ void PanTiltController::processJoystickInput() {
         resetSettings();
     } else if (btnEvent == Joystick::ButtonEvent::SHORT_PRESS) {
         autoPanner_.toggle(lastManualDirection_);
-        logger_.log(autoPanner_.isActive() ? "AUTO PANNING → ON" : "AUTO PANNING → OFF");
+        logger_.logAutoPanState(autoPanner_.isActive());
     }
 
     // Joystick movement
@@ -135,7 +110,7 @@ void PanTiltController::processJoystickInput() {
 
     if (reading.panMoved || reading.tiltMoved) {
         if (autoPanner_.isActive() && reading.panMoved) {
-            logger_.log("Joystick moved → AUTO PANNING DISABLED");
+            logger_.logAutoPanDisabled();
             autoPanner_.disable();
         }
 
@@ -152,9 +127,9 @@ void PanTiltController::processJoystickInput() {
     AutoPanner::UpdateResult result = autoPanner_.update(pan_, movementSpeed_);
     if (result.moved) {
         if (result.shouldLogBT) {
-            logger_.log("Channel: AutoPan | Command: Move | Position: " + String(pan_.angle()));
+            logger_.logCommand("AutoPan", Command::AUTOPAN, pan_.angle());
         } else {
-            logger_.logSerial("Channel: AutoPan | Command: Move | Position: " + String(pan_.angle()));
+            logger_.logCommandSerial("AutoPan", Command::AUTOPAN, pan_.angle());
         }
     }
 }

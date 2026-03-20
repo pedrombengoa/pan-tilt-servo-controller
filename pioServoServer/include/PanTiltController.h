@@ -4,6 +4,7 @@
 #include "ServoAxis.h"
 #include "Joystick.h"
 #include "AutoPanner.h"
+#include "Command.h"
 #include "Config.h"
 
 class PanTiltController {
