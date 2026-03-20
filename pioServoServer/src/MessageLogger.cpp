@@ -31,12 +31,13 @@ void MessageLogger::logSerial(const String& message) {
     Serial.flush();
 }
 
-void MessageLogger::logCommand(const String& channel, Command cmd, int position) {
-    log("Channel: " + channel + " | Command: " + commandToString(cmd) + " | Position: " + String(position));
-}
-
-void MessageLogger::logCommandSerial(const String& channel, Command cmd, int position) {
-    logSerial("Channel: " + channel + " | Command: " + commandToString(cmd) + " | Position: " + String(position));
+void MessageLogger::logCommand(const String& channel, Command cmd, int panPosition, int tiltPosition, bool bluetooth) {
+    String message = "Channel: " + channel + " | Command: " + commandToString(cmd) + " | Pan: " + String(panPosition) + " | Tilt: " + String(tiltPosition);
+    if (bluetooth) {
+        log(message);
+    } else {
+        logSerial(message);
+    }
 }
 
 void MessageLogger::logStartup() {
@@ -61,15 +62,11 @@ void MessageLogger::logServoStatus(int pin, bool attached) {
     }
 }
 
-void MessageLogger::logCalibration(int centroX, int centroY) {
-    log("[CAL] centroX=" + String(centroX) + " centroY=" + String(centroY));
-}
-
-void MessageLogger::logResetBanner(int position) {
+void MessageLogger::logResetBanner(int panPosition, int tiltPosition) {
     log("\n╔════════════════════════════════════════╗");
     log("║  SETTINGS RESET TO DEFAULTS  ║");
     log("╚════════════════════════════════════════╝");
-    logCommand("Reset", Command::RESET, position);
+    logCommand("Reset", Command::RESET, panPosition, tiltPosition);
 }
 
 void MessageLogger::logResetComplete() {

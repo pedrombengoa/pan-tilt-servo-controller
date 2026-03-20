@@ -13,13 +13,11 @@ public:
     void processQueue();
 
     // Structured log methods
-    void logCommand(const String& channel, Command cmd, int position);
-    void logCommandSerial(const String& channel, Command cmd, int position);
+    void logCommand(const String& channel, Command cmd, int panPosition, int tiltPosition, bool bluetooth = true);
     void logStartup();
     void logAvailableCommands();
     void logServoStatus(int pin, bool attached);
-    void logCalibration(int centroX, int centroY);
-    void logResetBanner(int position);
+    void logResetBanner(int panPosition, int tiltPosition);
     void logResetComplete();
     void logAutoPanState(bool active);
     void logAutoPanDisabled();

@@ -27,7 +27,6 @@ void PanTiltController::begin() {
     logger_.log("Move joystick significantly → auto mode disabled.");
 
     joystick_.calibrate();
-    logger_.logCalibration(joystick_.centroX(), joystick_.centroY());
 
     delay(1000);
 }
@@ -36,13 +35,13 @@ void PanTiltController::movePan(int direction, const String& source) {
     pan_.moveStep(direction, movementSpeed_);
     Command cmd = (direction > 0) ? Command::RIGHT : Command::LEFT;
     lastManualDirection_ = (direction > 0) ? 1 : -1;
-    logger_.logCommand(source, cmd, pan_.angle());
+    logger_.logCommand(source, cmd, pan_.angle(), tilt_.angle());
 }
 
 void PanTiltController::moveTilt(int direction, const String& source) {
     tilt_.moveStep(direction, movementSpeed_);
     Command cmd = (direction > 0) ? Command::UP : Command::DOWN;
-    logger_.logCommand(source, cmd, tilt_.angle());
+    logger_.logCommand(source, cmd, pan_.angle(), tilt_.angle());
 }
 
 void PanTiltController::resetSettings() {
@@ -57,7 +56,7 @@ void PanTiltController::resetSettings() {
     autoPanner_.reset();
     lastManualDirection_ = 0;
 
-    logger_.logResetBanner(pan_.angle());
+    logger_.logResetBanner(pan_.angle(), tilt_.angle());
 }
 
 void PanTiltController::processBTCommands() {
@@ -126,11 +125,7 @@ void PanTiltController::processJoystickInput() {
     // Auto panning
     AutoPanner::UpdateResult result = autoPanner_.update(pan_, movementSpeed_);
     if (result.moved) {
-        if (result.shouldLogBT) {
-            logger_.logCommand("AutoPan", Command::AUTOPAN, pan_.angle());
-        } else {
-            logger_.logCommandSerial("AutoPan", Command::AUTOPAN, pan_.angle());
-        }
+        logger_.logCommand("AutoPan", Command::AUTOPAN, pan_.angle(), tilt_.angle(), result.shouldLogBT);
     }
 }
 

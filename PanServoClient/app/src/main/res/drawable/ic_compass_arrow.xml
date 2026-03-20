@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="90dp"
+    android:height="90dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- Drop shadow (offset down-right) -->
+    <path
+        android:pathData="M53,12 L73,58 L53,88 L33,58 Z"
+        android:fillColor="#C8CED6"
+        android:fillAlpha="0.5" />
+
+    <!-- Right half of arrow (shadow face) -->
+    <path
+        android:pathData="M50,8 L68,55 L50,85 Z"
+        android:fillColor="#D0D5DB" />
+
+    <!-- Left half of arrow (highlight face) -->
+    <path
+        android:pathData="M50,8 L32,55 L50,85 Z"
+        android:fillColor="#F5F8FB" />
+
+    <!-- Center line (subtle edge between faces) -->
+    <path
+        android:pathData="M50,8 L50,85"
+        android:strokeColor="#C4CAD2"
+        android:strokeWidth="0.5" />
+
+    <!-- "N" letter - left stroke -->
+    <path
+        android:pathData="M44,38 L44,50"
+        android:strokeColor="#4D5E7C"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+
+    <!-- "N" letter - diagonal -->
+    <path
+        android:pathData="M44,38 L56,50"
+        android:strokeColor="#4D5E7C"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+
+    <!-- "N" letter - right stroke -->
+    <path
+        android:pathData="M56,38 L56,50"
+        android:strokeColor="#4D5E7C"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+
+</vector>
+

@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.PictureInPictureParams
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
-import android.content.Context.BLUETOOTH_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -26,7 +25,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -141,11 +139,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         BluetoothConnection.messages.observe(this) { message ->
-            if (message.contains("Position: ")) {
-                val position = message.substringAfter("Position: ").trim().toIntOrNull()
-                if (position != null) {
-                    currentAngle = position
+            // Nuevo formato: Channel: Joystick | Command: LEFT | Pan: 89 | Tilt: 90
+            val regex = Regex("Pan: (\\d+) \\| Tilt: (\\d+)")
+            val match = regex.find(message)
+            if (match != null) {
+                val pan = match.groupValues[1].toIntOrNull()
+                val tilt = match.groupValues[2].toIntOrNull()
+                if (pan != null) {
+                    currentAngle = pan
                     updateAngleUI(currentAngle)
+                }
+                if (tilt != null) {
+                    tvTiltAngle.text = getString(R.string.angle_format, tilt)
                 }
             }
         }
@@ -161,8 +166,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateAngleUI(position: Int) {
         tvAngle.text = getString(R.string.angle_format, position)
-        val speed = position / 180f // Normalize to 0-1 range
-        val rotation = (speed * 180) - 90 // Map to -90 to 90 range
+        // 90 = norte (0°), 0 = oeste (-90°), 180 = este (+90°)
+        val rotation = (position - 90).toFloat()
         speedometer.rotation = rotation
     }
 

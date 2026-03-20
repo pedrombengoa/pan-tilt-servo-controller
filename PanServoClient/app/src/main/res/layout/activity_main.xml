@@ -96,44 +96,6 @@
             android:padding="20dp">
 
             <!-- Top row: Move icon + Pan direction label -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
-
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:background="@drawable/neumorphic_button_circle"
-                    android:padding="5dp"
-                    android:src="@drawable/ic_move"
-                    android:contentDescription="@string/move" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/pan"
-                        android:textColor="@color/text_main"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/pan_arrows"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="14sp" />
-                </LinearLayout>
-            </LinearLayout>
 
             <!-- Main content: Knob (left) + Angle Controls (right) -->
             <LinearLayout
@@ -159,13 +121,6 @@
                         android:orientation="horizontal">
 
                         <!-- Pan label (left of knob) -->
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="8dp"
-                            android:text="@string/pan"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp" />
 
                         <!-- Knob area -->
                         <FrameLayout
@@ -173,10 +128,6 @@
                             android:layout_height="150dp">
 
                             <!-- Outer ring (inset) -->
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:background="@drawable/neumorphic_knob_ring" />
 
                             <!-- Inner knob (raised, centered) -->
                             <ImageView
@@ -184,7 +135,7 @@
                                 android:layout_width="90dp"
                                 android:layout_height="90dp"
                                 android:layout_gravity="center"
-                                android:background="@drawable/neumorphic_knob_center"
+                                android:src="@drawable/ic_compass_arrow"
                                 android:contentDescription="@string/servo_knob" />
 
                         </FrameLayout>
@@ -195,33 +146,11 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:gravity="center"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/tilt_arrow_up"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/tilt"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="12sp" />
-                        </LinearLayout>
+                            android:orientation="vertical"/>
 
                     </LinearLayout>
 
                     <!-- Tilt label below knob -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="@string/tilt"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
 
                 </LinearLayout>
 
