@@ -19,19 +19,19 @@
     <string name="pan_plus">Pan plus</string>
     <string name="tilt_minus">Tilt minus</string>
     <string name="tilt_plus">Tilt plus</string>
-    <string name="previous">Previous</string>
+    <string name="previous">Left</string>
     <string name="play">Play/Pause</string>
     <string name="play_pause">Play/Pause</string>
     <string name="pause">Pause</string>
     <string name="stop">Stop</string>
-    <string name="next">Next</string>
+    <string name="next">Right</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
     <string name="bluetooth_log">Bluetooth Log</string>
     <string name="clear_logs">Clear Logs</string>
-    <string name="status_connected_full">Status: Connected</string>
-    <string name="status_disconnected_full">Status: Disconnected</string>
+    <string name="status_connected_full">Bluetooth: Connected</string>
+    <string name="status_disconnected_full">Bluetooth: Disconnected</string>
 
     <!-- Permissions -->
     <string name="permission_required">Permission required</string>

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">PanServoClient</string>
-    <string name="header_title">Control de Servo\nde Precisión</string>
+    <string name="header_title">Pedrition Turret</string>
     <string name="status_label">Estado:</string>
     <string name="status_disconnected">Desconectado</string>
     <string name="status_connected">Conectado</string>
@@ -11,27 +11,27 @@
     <string name="tilt">Inclinación</string>
     <string name="tilt_arrow_up">↑</string>
     <string name="servo_knob">Perilla de posición del servo</string>
-    <string name="pan_angle">Ángulo panorámico</string>
-    <string name="tilt_angle">Ángulo de inclinación</string>
+    <string name="pan_angle">Ángulo horizontal</string>
+    <string name="tilt_angle">Ángulo vertical</string>
     <string name="default_angle">90°</string>
     <string name="angle_format">%d°</string>
     <string name="pan_minus">Panorámica menos</string>
     <string name="pan_plus">Panorámica más</string>
     <string name="tilt_minus">Inclinación menos</string>
     <string name="tilt_plus">Inclinación más</string>
-    <string name="previous">Anterior</string>
-    <string name="play">Reproducir/Pausar</string>
-    <string name="play_pause">Reproducir/Pausar</string>
-    <string name="pause">Pausar</string>
+    <string name="previous">Izquierda</string>
+    <string name="play">Automatico</string>
+    <string name="play_pause">Reprod/Pausa</string>
+    <string name="pause">Pausa</string>
     <string name="stop">Detener</string>
-    <string name="next">Siguiente</string>
+    <string name="next">Derecha</string>
 
     <!-- Settings -->
     <string name="settings_title">Configuración</string>
     <string name="bluetooth_log">Registro Bluetooth</string>
     <string name="clear_logs">Borrar registros</string>
-    <string name="status_connected_full">Estado: Conectado</string>
-    <string name="status_disconnected_full">Estado: Desconectado</string>
+    <string name="status_connected_full">Bluetooth: Conectado</string>
+    <string name="status_disconnected_full">Bluetooth: Desconectado</string>
 
     <!-- Permissions -->
     <string name="permission_required">Permiso requerido</string>
