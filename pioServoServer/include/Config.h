@@ -10,7 +10,7 @@ namespace Config {
     constexpr int PIN_SERVO_TILT = 19;
 
     // Servo direction
-    constexpr bool PAN_SERVO_REVERSED = false;
+    constexpr bool PAN_SERVO_REVERSED = true;
     constexpr bool TILT_SERVO_REVERSED = false;
 
     // Default calibration values
