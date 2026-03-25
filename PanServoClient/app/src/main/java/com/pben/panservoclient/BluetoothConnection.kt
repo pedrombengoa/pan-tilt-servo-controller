@@ -16,7 +16,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
@@ -37,6 +36,8 @@ object BluetoothConnection {
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var listeningJob: Job? = null
+    @Volatile
+    private var isConnecting = false
 
     private val hc05Uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
     private const val deviceName = "PanTilt"
@@ -50,6 +51,8 @@ object BluetoothConnection {
     }
 
     fun connect(context: Context, adapter: BluetoothAdapter) {
+        if (isConnected.value == true || isConnecting) return
+
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             errors.postValue(getString(R.string.error_bluetooth_permission))
             return
@@ -60,6 +63,7 @@ object BluetoothConnection {
             return
         }
 
+        isConnecting = true
         scope.launch {
             try {
                 val socket = device.createInsecureRfcommSocketToServiceRecord(hc05Uuid)
@@ -68,13 +72,12 @@ object BluetoothConnection {
                 outputStream = socket.outputStream
                 inputStream = socket.inputStream
                 isConnected.postValue(true)
-                withContext(Dispatchers.Main) {
-                    sendCommand(ServoCommand.INFO)
-                }
                 startListening()
             } catch (e: IOException) {
                 isConnected.postValue(false)
                 errors.postValue(getString(R.string.error_connecting, e.message ?: ""))
+            } finally {
+                isConnecting = false
             }
         }
     }
@@ -94,7 +97,7 @@ object BluetoothConnection {
     }
 
     private fun startListening() {
-        if (isConnected.value != true || listeningJob?.isActive == true) return
+        if (listeningJob?.isActive == true) return
         listeningJob = scope.launch {
             try {
                 val reader = BufferedReader(InputStreamReader(inputStream))
@@ -123,7 +126,7 @@ object BluetoothConnection {
         sendCommand(command.value)
     }
 
-    private fun sendCommand(command: String) {
+    fun sendCommand(command: String) {
         if (isConnected.value != true) {
             val errorMsg = getString(R.string.error_not_connected)
             errors.postValue(errorMsg)

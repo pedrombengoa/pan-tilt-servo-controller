@@ -43,3 +43,17 @@ info
 
 
 
+
+
+I want to add configuration commands to be received via blueetoth:
+-config_manual_pan_speed: set the speed of the left and right commands received from joystick
+-config_manual_tilt_speed: set the speed of the up and down commands received from joystick
+-config_bt_pan_speed: set the speed of the left and right commands received from blueetoth
+-config_bt_tilt_speed: set the speed of the up and down commands received from blueetoth
+-config_autopan_speed: set the speed of the autopan movements
+
+-config_pan_reversed: determines if pan servo is reversed or not
+-config_tilt_reversed: determines if tilt servo is reversed or not
+
+-max_pan_angle: ranges from 0 to 270 and determines the max pan angle allowed.
+-max_tilt_angle: ranges from 0 to 270 and determines the max tilt angle allowed.

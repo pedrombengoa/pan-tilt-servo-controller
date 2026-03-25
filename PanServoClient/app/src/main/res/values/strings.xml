@@ -23,7 +23,7 @@
     <string name="play">Play/Pause</string>
     <string name="play_pause">Play/Pause</string>
     <string name="pause">Pause</string>
-    <string name="stop">Stop</string>
+    <string name="stop">Center</string>
     <string name="next">Right</string>
 
     <!-- Settings -->
@@ -50,4 +50,18 @@
     <string name="language_english">English</string>
     <string name="language_spanish">Español</string>
     <string name="language_system">System default</string>
+
+    <!-- Bluetooth config -->
+    <string name="bluetooth_config_title">Bluetooth Configuration</string>
+    <string name="pan_speed">Pan Speed</string>
+    <string name="tilt_speed">Tilt Speed</string>
+    <string name="autopan_speed">Autopan Speed</string>
+    <string name="pan_reversed">Pan Reversed</string>
+    <string name="speed_decrease">Decrease speed</string>
+    <string name="speed_increase">Increase speed</string>
+    <string name="tilt_reversed">Tilt Reversed</string>
+    <string name="max_pan_angle">Max Pan Angle</string>
+    <string name="max_tilt_angle">Max Tilt Angle</string>
+    <string name="toggle_on">ON</string>
+    <string name="toggle_off">OFF</string>
 </resources>

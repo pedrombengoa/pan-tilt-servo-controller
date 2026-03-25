@@ -23,7 +23,24 @@ enum class ServoCommand(val value: String) {
     /** Stop all movement and center the servos. */
     RESET("RESET"),
 
-    /** Request device info on connection. */
-    INFO("INFO");
-}
+    /** Set the speed of pan movements. */
+    CONFIG_PAN_SPEED("CONFIG_PAN_SPEED"),
 
+    /** Set the speed of tilt movements. */
+    CONFIG_TILT_SPEED("CONFIG_TILT_SPEED"),
+
+    /** Set the speed of autopan movements. */
+    CONFIG_AUTOPAN_SPEED("CONFIG_AUTOPAN_SPEED"),
+
+    /** Set whether pan servo is reversed. */
+    CONFIG_PAN_REVERSED("CONFIG_PAN_REVERSED"),
+
+    /** Set whether tilt servo is reversed. */
+    CONFIG_TILT_REVERSED("CONFIG_TILT_REVERSED"),
+
+    /** Set the maximum pan angle (0–270). */
+    MAX_PAN_ANGLE("MAX_PAN_ANGLE"),
+
+    /** Set the maximum tilt angle (0–270). */
+    MAX_TILT_ANGLE("MAX_TILT_ANGLE");
+}

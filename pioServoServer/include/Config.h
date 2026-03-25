@@ -9,12 +9,24 @@ namespace Config {
     constexpr int PIN_SERVO_PAN = 18;
     constexpr int PIN_SERVO_TILT = 19;
 
+    // Servo direction
+    constexpr bool PAN_SERVO_REVERSED = false;
+    constexpr bool TILT_SERVO_REVERSED = false;
+
     // Default calibration values
     constexpr int DEFAULT_CENTRO_X = 1928;
     constexpr int DEFAULT_CENTRO_Y = 1928;
     constexpr int DEFAULT_DEADZONE = 800;
     constexpr int DEFAULT_NEUTRAL = 90;
-    constexpr int DEFAULT_MOVEMENT_SPEED = 1;
+
+    // Default speeds
+    constexpr int DEFAULT_PAN_SPEED = 1;
+    constexpr int DEFAULT_TILT_SPEED = 1;
+    constexpr int DEFAULT_AUTOPAN_SPEED = 1;
+
+    // Default angle limits
+    constexpr int DEFAULT_MAX_PAN_ANGLE = 180;
+    constexpr int DEFAULT_MAX_TILT_ANGLE = 50;
 
     // Timing
     constexpr unsigned long LONG_PRESS_MS = 2000;

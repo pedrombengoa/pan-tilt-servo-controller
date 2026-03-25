@@ -28,11 +28,11 @@ AutoPanner::UpdateResult AutoPanner::update(ServoAxis& axis, int speed) {
 
     int newAngle = axis.angle() + speed * direction_;
 
-    if (newAngle >= 180) {
-        newAngle = 180;
+    if (newAngle >= axis.maxLimit()) {
+        newAngle = axis.maxLimit();
         direction_ = -1;
-    } else if (newAngle <= 0) {
-        newAngle = 0;
+    } else if (newAngle <= axis.minLimit()) {
+        newAngle = axis.minLimit();
         direction_ = 1;
     }
 

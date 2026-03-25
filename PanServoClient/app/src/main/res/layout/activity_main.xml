@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/neumorphic_background"
-    android:fillViewport="true"
-    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    android:padding="16dp"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
 
         <!-- ==================== HEADER CARD ==================== -->
         <androidx.appcompat.widget.Toolbar
@@ -89,10 +84,12 @@
         <LinearLayout
             android:id="@+id/controlsCard"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:layout_marginTop="16dp"
             android:background="@drawable/neumorphic_card"
             android:orientation="vertical"
+            android:gravity="center_vertical"
             android:padding="20dp">
 
             <!-- Top row: Move icon + Pan direction label -->
@@ -392,5 +389,4 @@
 
         </LinearLayout>
 
-    </LinearLayout>
-</ScrollView>
+</LinearLayout>

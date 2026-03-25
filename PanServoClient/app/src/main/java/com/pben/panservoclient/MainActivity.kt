@@ -25,6 +25,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
 class MainActivity : AppCompatActivity() {
 
@@ -48,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         BluetoothConnection.init(application)
         setContentView(R.layout.activity_main)
+        enableImmersiveMode()
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -80,11 +84,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnSkipPrevious.setOnTouchListener { _, event ->
+            isAutopan = !isAutopan
+            updatePlayPauseButton()
             handleContinuousPress(event, ServoCommand.LEFT)
             true
         }
 
         btnSkipNext.setOnTouchListener { _, event ->
+            isAutopan = !isAutopan
+            updatePlayPauseButton()
             handleContinuousPress(event, ServoCommand.RIGHT)
             true
         }
@@ -92,9 +100,7 @@ class MainActivity : AppCompatActivity() {
         btnPlayPause.setOnClickListener {
             isAutopan = !isAutopan
             updatePlayPauseButton()
-            if (isAutopan) {
-                BluetoothConnection.sendCommand(ServoCommand.AUTOPAN)
-            }
+            BluetoothConnection.sendCommand(ServoCommand.AUTOPAN)
         }
 
         btnStop.setOnClickListener {
@@ -229,6 +235,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateButtonState(isConnected: Boolean) {
         btnConnect.setImageResource(if (isConnected) R.drawable.ic_bluetooth else R.drawable.ic_bluetooth_disabled)
+    }
+
+    private fun enableImmersiveMode() {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        val controller = WindowInsetsControllerCompat(window, window.decorView)
+        controller.hide(WindowInsetsCompat.Type.systemBars())
+        controller.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) enableImmersiveMode()
     }
 
     private fun updatePipParams() {
