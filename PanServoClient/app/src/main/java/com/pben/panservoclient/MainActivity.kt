@@ -172,8 +172,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateAngleUI(position: Int) {
         tvAngle.text = getString(R.string.angle_format, position)
-        // 90 = norte (0°), 0 = oeste (-90°), 180 = este (+90°)
-        val rotation = (position - 90).toFloat()
+        // 90 = norte (0°), 180 = oeste (-90°), 0 = este (+90°)
+        val rotation = (90 - position).toFloat()
         speedometer.rotation = rotation
     }
 
