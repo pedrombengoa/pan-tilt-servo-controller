@@ -59,8 +59,7 @@
                 android:text="@string/bluetooth_config_title"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
-
-            <!-- Reversa -->
+            <!-- Auto Pan Step (ms) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -73,36 +72,37 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/pan_reversed" />
+                    android:text="@string/auto_pan_step_ms" />
 
-                <com.google.android.material.button.MaterialButtonToggleGroup
-                    android:id="@+id/togglePanReversed"
-                    android:layout_width="wrap_content"
+                <ImageButton
+                    android:id="@+id/btnAutoPanStepMsMinus"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/speed_decrease"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_remove" />
+
+                <TextView
+                    android:id="@+id/tvAutoPanStepMs"
+                    android:layout_width="50dp"
                     android:layout_height="wrap_content"
-                    app:singleSelection="true"
-                    app:selectionRequired="true">
+                    android:gravity="center"
+                    android:text="@string/config_placeholder"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnPanReversedOff"
-                        style="?attr/materialButtonOutlinedStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:minWidth="56dp"
-                        android:text="@string/toggle_off"
-                        android:textSize="12sp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnPanReversedOn"
-                        style="?attr/materialButtonOutlinedStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:minWidth="56dp"
-                        android:text="@string/toggle_on"
-                        android:textSize="12sp" />
-
-                </com.google.android.material.button.MaterialButtonToggleGroup>
+                <ImageButton
+                    android:id="@+id/btnAutoPanStepMsPlus"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/speed_increase"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_add" />
             </LinearLayout>
 
+            <!-- Servo Step (ms) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -115,34 +115,34 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/tilt_reversed" />
+                    android:text="@string/servo_step_ms" />
 
-                <com.google.android.material.button.MaterialButtonToggleGroup
-                    android:id="@+id/toggleTiltReversed"
-                    android:layout_width="wrap_content"
+                <ImageButton
+                    android:id="@+id/btnServoStepMsMinus"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/speed_decrease"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_remove" />
+
+                <TextView
+                    android:id="@+id/tvServoStepMs"
+                    android:layout_width="50dp"
                     android:layout_height="wrap_content"
-                    app:singleSelection="true"
-                    app:selectionRequired="true">
+                    android:gravity="center"
+                    android:text="@string/config_placeholder"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnTiltReversedOff"
-                        style="?attr/materialButtonOutlinedStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:minWidth="56dp"
-                        android:text="@string/toggle_off"
-                        android:textSize="12sp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnTiltReversedOn"
-                        style="?attr/materialButtonOutlinedStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:minWidth="56dp"
-                        android:text="@string/toggle_on"
-                        android:textSize="12sp" />
-
-                </com.google.android.material.button.MaterialButtonToggleGroup>
+                <ImageButton
+                    android:id="@+id/btnServoStepMsPlus"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/speed_increase"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_add" />
             </LinearLayout>
 
             <!-- Ángulos máximos -->
@@ -230,7 +230,8 @@
                     android:src="@drawable/ic_add" />
             </LinearLayout>
 
-            <!-- Servo Step (ms) -->
+
+            <!-- Reversa -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -243,37 +244,36 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/servo_step_ms" />
+                    android:text="@string/pan_reversed" />
 
-                <ImageButton
-                    android:id="@+id/btnServoStepMsMinus"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/speed_decrease"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_remove" />
-
-                <TextView
-                    android:id="@+id/tvServoStepMs"
-                    android:layout_width="50dp"
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/togglePanReversed"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/config_placeholder"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    app:singleSelection="true"
+                    app:selectionRequired="true">
 
-                <ImageButton
-                    android:id="@+id/btnServoStepMsPlus"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/speed_increase"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_add" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPanReversedOff"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:minWidth="56dp"
+                        android:text="@string/toggle_off"
+                        android:textSize="12sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPanReversedOn"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:minWidth="56dp"
+                        android:text="@string/toggle_on"
+                        android:textSize="12sp" />
+
+                </com.google.android.material.button.MaterialButtonToggleGroup>
             </LinearLayout>
 
-            <!-- Auto Pan Step (ms) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -286,34 +286,34 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/auto_pan_step_ms" />
+                    android:text="@string/tilt_reversed" />
 
-                <ImageButton
-                    android:id="@+id/btnAutoPanStepMsMinus"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/speed_decrease"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_remove" />
-
-                <TextView
-                    android:id="@+id/tvAutoPanStepMs"
-                    android:layout_width="50dp"
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/toggleTiltReversed"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/config_placeholder"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    app:singleSelection="true"
+                    app:selectionRequired="true">
 
-                <ImageButton
-                    android:id="@+id/btnAutoPanStepMsPlus"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/speed_increase"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_add" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTiltReversedOff"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:minWidth="56dp"
+                        android:text="@string/toggle_off"
+                        android:textSize="12sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTiltReversedOn"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:minWidth="56dp"
+                        android:text="@string/toggle_on"
+                        android:textSize="12sp" />
+
+                </com.google.android.material.button.MaterialButtonToggleGroup>
             </LinearLayout>
 
 
