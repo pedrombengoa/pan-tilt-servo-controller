@@ -15,7 +15,7 @@ public:
     void reset();
     bool isActive() const { return active_; }
 
-    UpdateResult update(ServoAxis& axis, int speed);
+    UpdateResult update(ServoAxis& axis, int speed, unsigned long stepMs);
 
 private:
     bool active_ = false;

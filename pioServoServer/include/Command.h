@@ -8,13 +8,12 @@ enum class Command {
     DOWN,
     RESET,
     AUTOPAN,
-    CONFIG_PAN_SPEED,
-    CONFIG_TILT_SPEED,
-    CONFIG_AUTOPAN_SPEED,
     CONFIG_PAN_REVERSED,
     CONFIG_TILT_REVERSED,
     MAX_PAN_ANGLE,
     MAX_TILT_ANGLE,
+    CONFIG_SERVO_STEP_MS,
+    CONFIG_AUTO_PAN_STEP_MS,
     UNKNOWN
 };
 
@@ -39,13 +38,12 @@ inline ParsedCommand parseCommand(const String& str) {
         String key = upper.substring(0, sep);
         int val = str.substring(sep + 1).toInt();
 
-        if (key == "CONFIG_PAN_SPEED")         return { Command::CONFIG_PAN_SPEED, val };
-        if (key == "CONFIG_TILT_SPEED")        return { Command::CONFIG_TILT_SPEED, val };
-        if (key == "CONFIG_AUTOPAN_SPEED")     return { Command::CONFIG_AUTOPAN_SPEED, val };
         if (key == "CONFIG_PAN_REVERSED")      return { Command::CONFIG_PAN_REVERSED, val };
         if (key == "CONFIG_TILT_REVERSED")     return { Command::CONFIG_TILT_REVERSED, val };
         if (key == "MAX_PAN_ANGLE")            return { Command::MAX_PAN_ANGLE, val };
         if (key == "MAX_TILT_ANGLE")           return { Command::MAX_TILT_ANGLE, val };
+        if (key == "CONFIG_SERVO_STEP_MS")     return { Command::CONFIG_SERVO_STEP_MS, val };
+        if (key == "CONFIG_AUTO_PAN_STEP_MS")  return { Command::CONFIG_AUTO_PAN_STEP_MS, val };
     }
 
     return { Command::UNKNOWN, 0 };
@@ -59,13 +57,12 @@ inline const char* commandToString(Command cmd) {
         case Command::DOWN:                    return "DOWN";
         case Command::RESET:                   return "RESET";
         case Command::AUTOPAN:                 return "AUTOPAN";
-        case Command::CONFIG_PAN_SPEED:         return "CONFIG_PAN_SPEED";
-        case Command::CONFIG_TILT_SPEED:        return "CONFIG_TILT_SPEED";
-        case Command::CONFIG_AUTOPAN_SPEED:    return "CONFIG_AUTOPAN_SPEED";
         case Command::CONFIG_PAN_REVERSED:     return "CONFIG_PAN_REVERSED";
         case Command::CONFIG_TILT_REVERSED:    return "CONFIG_TILT_REVERSED";
         case Command::MAX_PAN_ANGLE:           return "MAX_PAN_ANGLE";
         case Command::MAX_TILT_ANGLE:          return "MAX_TILT_ANGLE";
+        case Command::CONFIG_SERVO_STEP_MS:    return "CONFIG_SERVO_STEP_MS";
+        case Command::CONFIG_AUTO_PAN_STEP_MS: return "CONFIG_AUTO_PAN_STEP_MS";
         case Command::UNKNOWN:                 return "UNKNOWN";
     }
     return "UNKNOWN";

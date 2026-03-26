@@ -49,19 +49,20 @@
     <string name="language_label">Language</string>
     <string name="language_english">English</string>
     <string name="language_spanish">Español</string>
-    <string name="language_system">System default</string>
 
     <!-- Bluetooth config -->
     <string name="bluetooth_config_title">Bluetooth Configuration</string>
-    <string name="pan_speed">Pan Speed</string>
-    <string name="tilt_speed">Tilt Speed</string>
-    <string name="autopan_speed">Autopan Speed</string>
     <string name="pan_reversed">Pan Reversed</string>
-    <string name="speed_decrease">Decrease speed</string>
-    <string name="speed_increase">Increase speed</string>
+    <string name="speed_decrease">Decrease</string>
+    <string name="speed_increase">Increase</string>
     <string name="tilt_reversed">Tilt Reversed</string>
     <string name="max_pan_angle">Max Pan Angle</string>
     <string name="max_tilt_angle">Max Tilt Angle</string>
+    <string name="servo_step_ms">Servo Step (ms)</string>
+    <string name="auto_pan_step_ms">Auto Pan Step (ms)</string>
     <string name="toggle_on">ON</string>
     <string name="toggle_off">OFF</string>
+
+    <!-- Config placeholder -->
+    <string name="config_placeholder">--</string>
 </resources>

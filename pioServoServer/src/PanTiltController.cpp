@@ -34,15 +34,21 @@ void PanTiltController::begin() {
     delay(1000);
 }
 
-void PanTiltController::movePan(int direction, int speed, const String& source) {
-    pan_.moveStep(direction, speed);
+void PanTiltController::movePan(int direction, const String& source) {
+    unsigned long now = millis();
+    if (now - lastPanStep_ < servoStepMs_) return;
+    lastPanStep_ = now;
+    pan_.moveStep(direction, 1);
     Command cmd = (direction > 0) ? Command::RIGHT : Command::LEFT;
     lastManualDirection_ = (direction > 0) ? 1 : -1;
     logger_.logCommand(source, cmd, pan_.angle(), tilt_.angle());
 }
 
-void PanTiltController::moveTilt(int direction, int speed, const String& source) {
-    tilt_.moveStep(direction, speed);
+void PanTiltController::moveTilt(int direction, const String& source) {
+    unsigned long now = millis();
+    if (now - lastTiltStep_ < servoStepMs_) return;
+    lastTiltStep_ = now;
+    tilt_.moveStep(direction, 1);
     Command cmd = (direction > 0) ? Command::UP : Command::DOWN;
     logger_.logCommand(source, cmd, pan_.angle(), tilt_.angle());
 }
@@ -51,9 +57,8 @@ void PanTiltController::resetSettings() {
     joystick_.setCentroX(Config::DEFAULT_CENTRO_X);
     deadzone_ = Config::DEFAULT_DEADZONE;
     neutral_ = Config::DEFAULT_NEUTRAL;
-    panSpeed_ = Config::DEFAULT_PAN_SPEED;
-    tiltSpeed_ = Config::DEFAULT_TILT_SPEED;
-    autoPanSpeed_ = Config::DEFAULT_AUTOPAN_SPEED;
+    servoStepMs_ = Config::DEFAULT_SERVO_STEP_MS;
+    autoPanStepMs_ = Config::DEFAULT_AUTO_PAN_STEP_MS;
 
     pan_.setReversed(Config::PAN_SERVO_REVERSED);
     tilt_.setReversed(Config::TILT_SERVO_REVERSED);
@@ -67,6 +72,7 @@ void PanTiltController::resetSettings() {
     lastManualDirection_ = 0;
 
     logger_.logResetBanner(pan_.angle(), tilt_.angle());
+    logCurrentConfig();
 }
 
 void PanTiltController::processBTCommands() {
@@ -80,17 +86,17 @@ void PanTiltController::processBTCommands() {
     switch (parsed.command) {
         case Command::LEFT:
             autoPanner_.disable();
-            movePan(-1, panSpeed_, "bluetooth");
+            movePan(-1, "bluetooth");
             break;
         case Command::RIGHT:
             autoPanner_.disable();
-            movePan(1, panSpeed_, "bluetooth");
+            movePan(1, "bluetooth");
             break;
         case Command::UP:
-            moveTilt(1, tiltSpeed_, "bluetooth");
+            moveTilt(1, "bluetooth");
             break;
         case Command::DOWN:
-            moveTilt(-1, tiltSpeed_, "bluetooth");
+            moveTilt(-1, "bluetooth");
             break;
         case Command::RESET:
             resetSettings();
@@ -99,18 +105,6 @@ void PanTiltController::processBTCommands() {
         case Command::AUTOPAN:
             autoPanner_.toggle(lastManualDirection_);
             logger_.logAutoPanState(autoPanner_.isActive());
-            break;
-        case Command::CONFIG_PAN_SPEED:
-            panSpeed_ = max(1, parsed.value);
-            logger_.log("Config set: CONFIG_PAN_SPEED = " + String(parsed.value));
-            break;
-        case Command::CONFIG_TILT_SPEED:
-            tiltSpeed_ = max(1, parsed.value);
-            logger_.log("Config set: CONFIG_TILT_SPEED = " + String(parsed.value));
-            break;
-        case Command::CONFIG_AUTOPAN_SPEED:
-            autoPanSpeed_ = max(1, parsed.value);
-            logger_.log("Config set: autopan_speed = " + String(parsed.value));
             break;
         case Command::CONFIG_PAN_REVERSED:
             pan_.setReversed(parsed.value != 0);
@@ -128,6 +122,14 @@ void PanTiltController::processBTCommands() {
             tilt_.setMaxAngle(constrain(parsed.value, 0, 270));
             logger_.log("Config set: max_tilt_angle = " + String(parsed.value));
             break;
+        case Command::CONFIG_SERVO_STEP_MS:
+            servoStepMs_ = max(10UL, (unsigned long)parsed.value);
+            logger_.log("Config set: CONFIG_SERVO_STEP_MS = " + String(servoStepMs_));
+            break;
+        case Command::CONFIG_AUTO_PAN_STEP_MS:
+            autoPanStepMs_ = max(10UL, (unsigned long)parsed.value);
+            logger_.log("Config set: CONFIG_AUTO_PAN_STEP_MS = " + String(autoPanStepMs_));
+            break;
         case Command::UNKNOWN:
             logger_.logUnknownCommand(raw);
             break;
@@ -139,6 +141,7 @@ void PanTiltController::processJoystickInput() {
     Joystick::ButtonEvent btnEvent = joystick_.updateButton();
     if (btnEvent == Joystick::ButtonEvent::LONG_PRESS) {
         resetSettings();
+        logger_.logResetComplete();
     } else if (btnEvent == Joystick::ButtonEvent::SHORT_PRESS) {
         autoPanner_.toggle(lastManualDirection_);
         logger_.logAutoPanState(autoPanner_.isActive());
@@ -155,32 +158,35 @@ void PanTiltController::processJoystickInput() {
         }
 
         if (reading.panMoved) {
-            movePan(reading.panDirection, panSpeed_, "Joystick");
+            movePan(reading.panDirection, "Joystick");
         }
 
         if (reading.tiltMoved) {
-            moveTilt(reading.tiltDirection, tiltSpeed_, "Joystick");
+            moveTilt(reading.tiltDirection, "Joystick");
         }
     }
 
     // Auto panning
-    AutoPanner::UpdateResult result = autoPanner_.update(pan_, autoPanSpeed_);
+    AutoPanner::UpdateResult result = autoPanner_.update(pan_, 1, autoPanStepMs_);
     if (result.moved) {
         logger_.logCommand("AutoPan", Command::AUTOPAN, pan_.angle(), tilt_.angle(), result.shouldLogBT);
     }
+}
+
+void PanTiltController::logCurrentConfig() {
+    logger_.log("CONFIG_PAN_REVERSED:" + String(pan_.isReversed() ? 1 : 0));
+    logger_.log("CONFIG_TILT_REVERSED:" + String(tilt_.isReversed() ? 1 : 0));
+    logger_.log("MAX_PAN_ANGLE:" + String(pan_.maxAngle()));
+    logger_.log("MAX_TILT_ANGLE:" + String(tilt_.maxAngle()));
+    logger_.log("CONFIG_SERVO_STEP_MS:" + String(servoStepMs_));
+    logger_.log("CONFIG_AUTO_PAN_STEP_MS:" + String(autoPanStepMs_));
 }
 
 void PanTiltController::update() {
     bool connected = bt_.hasClient();
     if (connected && !btConnected_) {
         logger_.log("Bluetooth client connected.");
-        logger_.log("CONFIG_PAN_SPEED:" + String(panSpeed_));
-        logger_.log("CONFIG_TILT_SPEED:" + String(tiltSpeed_));
-        logger_.log("CONFIG_AUTOPAN_SPEED:" + String(autoPanSpeed_));
-        logger_.log("CONFIG_PAN_REVERSED:" + String(pan_.isReversed() ? 1 : 0));
-        logger_.log("CONFIG_TILT_REVERSED:" + String(tilt_.isReversed() ? 1 : 0));
-        logger_.log("MAX_PAN_ANGLE:" + String(pan_.maxAngle()));
-        logger_.log("MAX_TILT_ANGLE:" + String(tilt_.maxAngle()));
+        logCurrentConfig();
     } else if (!connected && btConnected_) {
         logger_.logSerial("Bluetooth client disconnected.");
     }

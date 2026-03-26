@@ -59,134 +59,6 @@
                 android:text="@string/bluetooth_config_title"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
-            <!-- Pan Speed -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/pan_speed" />
-
-                <ImageButton
-                    android:id="@+id/btnPanSpeedMinus"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/speed_decrease"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_remove" />
-
-                <TextView
-                    android:id="@+id/tvPanSpeed"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="1"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <ImageButton
-                    android:id="@+id/btnPanSpeedPlus"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/speed_increase"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_add" />
-            </LinearLayout>
-
-            <!-- Tilt Speed -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/tilt_speed" />
-
-                <ImageButton
-                    android:id="@+id/btnTiltSpeedMinus"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/speed_decrease"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_remove" />
-
-                <TextView
-                    android:id="@+id/tvTiltSpeed"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="1"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <ImageButton
-                    android:id="@+id/btnTiltSpeedPlus"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/speed_increase"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_add" />
-            </LinearLayout>
-
-            <!-- Autopan -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/autopan_speed" />
-
-                <ImageButton
-                    android:id="@+id/btnAutopanSpeedMinus"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/speed_decrease"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_remove" />
-
-                <TextView
-                    android:id="@+id/tvAutopanSpeed"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="1"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <ImageButton
-                    android:id="@+id/btnAutopanSpeedPlus"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/speed_increase"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_add" />
-            </LinearLayout>
 
             <!-- Reversa -->
             <LinearLayout
@@ -302,7 +174,7 @@
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="180"
+                    android:text="@string/config_placeholder"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -344,7 +216,7 @@
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="180"
+                    android:text="@string/config_placeholder"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -357,6 +229,93 @@
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_add" />
             </LinearLayout>
+
+            <!-- Servo Step (ms) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/servo_step_ms" />
+
+                <ImageButton
+                    android:id="@+id/btnServoStepMsMinus"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/speed_decrease"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_remove" />
+
+                <TextView
+                    android:id="@+id/tvServoStepMs"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/config_placeholder"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/btnServoStepMsPlus"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/speed_increase"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_add" />
+            </LinearLayout>
+
+            <!-- Auto Pan Step (ms) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/auto_pan_step_ms" />
+
+                <ImageButton
+                    android:id="@+id/btnAutoPanStepMsMinus"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/speed_decrease"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_remove" />
+
+                <TextView
+                    android:id="@+id/tvAutoPanStepMs"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/config_placeholder"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/btnAutoPanStepMsPlus"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/speed_increase"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_add" />
+            </LinearLayout>
+
 
             <View
                 android:layout_width="match_parent"

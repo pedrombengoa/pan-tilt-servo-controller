@@ -35,15 +35,14 @@
 
     <!-- Configuración Bluetooth -->
     <string name="bluetooth_config_title">Configuración Bluetooth</string>
-    <string name="pan_speed">Velocidad de paneo</string>
-    <string name="tilt_speed">Velocidad de inclinación</string>
-    <string name="autopan_speed">Velocidad de autopan</string>
     <string name="pan_reversed">Paneo invertido</string>
-    <string name="speed_decrease">Disminuir velocidad</string>
-    <string name="speed_increase">Aumentar velocidad</string>
+    <string name="speed_decrease">Disminuir</string>
+    <string name="speed_increase">Aumentar</string>
     <string name="tilt_reversed">Inclinación invertida</string>
     <string name="max_pan_angle">Ángulo máximo de paneo</string>
     <string name="max_tilt_angle">Ángulo máximo de inclinación</string>
+    <string name="servo_step_ms">Paso del servo (ms)</string>
+    <string name="auto_pan_step_ms">Paso de auto-pan (ms)</string>
     <string name="toggle_on">ON</string>
     <string name="toggle_off">OFF</string>
 
@@ -63,5 +62,7 @@
     <string name="language_label">Idioma</string>
     <string name="language_english">English</string>
     <string name="language_spanish">Español</string>
-    <string name="language_system">Predeterminado del sistema</string>
+
+    <!-- Config placeholder -->
+    <string name="config_placeholder">--</string>
 </resources>

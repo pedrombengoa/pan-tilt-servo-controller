@@ -19,18 +19,18 @@ namespace Config {
     constexpr int DEFAULT_DEADZONE = 800;
     constexpr int DEFAULT_NEUTRAL = 90;
 
-    // Default speeds
-    constexpr int DEFAULT_PAN_SPEED = 1;
-    constexpr int DEFAULT_TILT_SPEED = 1;
-    constexpr int DEFAULT_AUTOPAN_SPEED = 1;
-
     // Default angle limits
     constexpr int DEFAULT_MAX_PAN_ANGLE = 180;
     constexpr int DEFAULT_MAX_TILT_ANGLE = 50;
 
+    // Default servo step interval
+    constexpr unsigned long DEFAULT_SERVO_STEP_MS = 50;
+
+    // Auto-pan step interval (separate from manual speed)
+    constexpr unsigned long DEFAULT_AUTO_PAN_STEP_MS = 100;
+
     // Timing
     constexpr unsigned long LONG_PRESS_MS = 2000;
-    constexpr unsigned long AUTO_PAN_STEP_MS = 80;
     constexpr unsigned long BT_SEND_INTERVAL_MS = 200;
     constexpr int AUTO_PAN_LOG_EVERY = 10;
     constexpr int AUTO_PAN_DEADZONE = 200;

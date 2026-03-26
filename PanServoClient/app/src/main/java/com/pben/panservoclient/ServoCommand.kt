@@ -23,24 +23,21 @@ enum class ServoCommand(val value: String) {
     /** Stop all movement and center the servos. */
     RESET("RESET"),
 
-    /** Set the speed of pan movements. */
-    CONFIG_PAN_SPEED("CONFIG_PAN_SPEED"),
-
-    /** Set the speed of tilt movements. */
-    CONFIG_TILT_SPEED("CONFIG_TILT_SPEED"),
-
-    /** Set the speed of autopan movements. */
-    CONFIG_AUTOPAN_SPEED("CONFIG_AUTOPAN_SPEED"),
-
-    /** Set whether pan servo is reversed. */
+    /** Set whether pan servo is reversed (0=normal, 1=reversed). Default: 1. */
     CONFIG_PAN_REVERSED("CONFIG_PAN_REVERSED"),
 
-    /** Set whether tilt servo is reversed. */
+    /** Set whether tilt servo is reversed (0=normal, 1=reversed). Default: 0. */
     CONFIG_TILT_REVERSED("CONFIG_TILT_REVERSED"),
 
-    /** Set the maximum pan angle (0–270). */
+    /** Set the maximum pan angle (0–270, default 180). */
     MAX_PAN_ANGLE("MAX_PAN_ANGLE"),
 
-    /** Set the maximum tilt angle (0–270). */
-    MAX_TILT_ANGLE("MAX_TILT_ANGLE");
+    /** Set the maximum tilt angle (0–270, default 50). */
+    MAX_TILT_ANGLE("MAX_TILT_ANGLE"),
+
+    /** Set the servo step delay in milliseconds (min 10, default 50). */
+    CONFIG_SERVO_STEP_MS("CONFIG_SERVO_STEP_MS"),
+
+    /** Set the auto-pan step delay in milliseconds (min 10, default 100). */
+    CONFIG_AUTO_PAN_STEP_MS("CONFIG_AUTO_PAN_STEP_MS");
 }

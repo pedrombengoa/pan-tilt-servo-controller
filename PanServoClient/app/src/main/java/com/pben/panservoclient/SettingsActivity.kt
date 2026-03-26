@@ -27,27 +27,28 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var btnClearLogs: Button
     private lateinit var spinnerLanguage: Spinner
 
-    // Language codes matching the spinner order
-    private val languageCodes = arrayOf("", "en", "es") // "" = system default
-
-    // Speed displays (read-only TextViews)
-    private lateinit var tvPanSpeed: TextView
-    private lateinit var tvTiltSpeed: TextView
-    private lateinit var tvAutopanSpeed: TextView
+    // Language codes matching the spinner order (español first = default)
+    private val languageCodes = arrayOf("es", "en")
 
     private lateinit var togglePanReversed: MaterialButtonToggleGroup
     private lateinit var toggleTiltReversed: MaterialButtonToggleGroup
     private lateinit var tvMaxPanAngle: TextView
     private lateinit var tvMaxTiltAngle: TextView
+    private lateinit var tvServoStepMs: TextView
+    private lateinit var tvAutoPanStepMs: TextView
 
     private var configListenersActive = false
 
     companion object {
-        private const val SPEED_MIN = 1
-        private const val SPEED_MAX = 10
         private const val ANGLE_MIN = 0
-        private const val ANGLE_MAX = 180
+        private const val ANGLE_MAX = 270
         private const val ANGLE_STEP = 10
+        private const val SERVO_STEP_MS_MIN = 10
+        private const val SERVO_STEP_MS_MAX = 2000
+        private const val SERVO_STEP_MS_STEP = 10
+        private const val AUTO_PAN_STEP_MS_MIN = 10
+        private const val AUTO_PAN_STEP_MS_MAX = 2000
+        private const val AUTO_PAN_STEP_MS_STEP = 10
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,16 +66,13 @@ class SettingsActivity : AppCompatActivity() {
         btnClearLogs = findViewById(R.id.btnClearLogs)
         spinnerLanguage = findViewById(R.id.spinnerLanguage)
 
-        // Speed displays
-        tvPanSpeed = findViewById(R.id.tvPanSpeed)
-        tvTiltSpeed = findViewById(R.id.tvTiltSpeed)
-        tvAutopanSpeed = findViewById(R.id.tvAutopanSpeed)
-
-        // Other config fields
+        // Config fields
         togglePanReversed = findViewById(R.id.togglePanReversed)
         toggleTiltReversed = findViewById(R.id.toggleTiltReversed)
         tvMaxPanAngle = findViewById(R.id.tvMaxPanAngle)
         tvMaxTiltAngle = findViewById(R.id.tvMaxTiltAngle)
+        tvServoStepMs = findViewById(R.id.tvServoStepMs)
+        tvAutoPanStepMs = findViewById(R.id.tvAutoPanStepMs)
 
         setupConfigListeners()
         setupLanguageSelector()
@@ -93,14 +91,15 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun setupConfigListeners() {
-        // Speed +/- buttons
-        setupStepperButtons(R.id.btnPanSpeedMinus, R.id.btnPanSpeedPlus, tvPanSpeed, ServoCommand.CONFIG_PAN_SPEED, SPEED_MIN, SPEED_MAX, 1)
-        setupStepperButtons(R.id.btnTiltSpeedMinus, R.id.btnTiltSpeedPlus, tvTiltSpeed, ServoCommand.CONFIG_TILT_SPEED, SPEED_MIN, SPEED_MAX, 1)
-        setupStepperButtons(R.id.btnAutopanSpeedMinus, R.id.btnAutopanSpeedPlus, tvAutopanSpeed, ServoCommand.CONFIG_AUTOPAN_SPEED, SPEED_MIN, SPEED_MAX, 1)
-
         // Max angle +/- buttons
         setupStepperButtons(R.id.btnMaxPanAngleMinus, R.id.btnMaxPanAnglePlus, tvMaxPanAngle, ServoCommand.MAX_PAN_ANGLE, ANGLE_MIN, ANGLE_MAX, ANGLE_STEP)
         setupStepperButtons(R.id.btnMaxTiltAngleMinus, R.id.btnMaxTiltAnglePlus, tvMaxTiltAngle, ServoCommand.MAX_TILT_ANGLE, ANGLE_MIN, ANGLE_MAX, ANGLE_STEP)
+
+        // Servo step ms +/- buttons
+        setupStepperButtons(R.id.btnServoStepMsMinus, R.id.btnServoStepMsPlus, tvServoStepMs, ServoCommand.CONFIG_SERVO_STEP_MS, SERVO_STEP_MS_MIN, SERVO_STEP_MS_MAX, SERVO_STEP_MS_STEP)
+
+        // Auto pan step ms +/- buttons
+        setupStepperButtons(R.id.btnAutoPanStepMsMinus, R.id.btnAutoPanStepMsPlus, tvAutoPanStepMs, ServoCommand.CONFIG_AUTO_PAN_STEP_MS, AUTO_PAN_STEP_MS_MIN, AUTO_PAN_STEP_MS_MAX, AUTO_PAN_STEP_MS_STEP)
 
         // Reversed toggles (OFF/ON button groups)
         togglePanReversed.check(R.id.btnPanReversedOff)
@@ -158,18 +157,17 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun setupLanguageSelector() {
         val languageNames = arrayOf(
-            getString(R.string.language_system),
-            getString(R.string.language_english),
-            getString(R.string.language_spanish)
+            getString(R.string.language_spanish),
+            getString(R.string.language_english)
         )
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, languageNames)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerLanguage.adapter = adapter
 
-        // Set current selection based on current app locale
+        // Set current selection based on current app locale (default to español = index 0)
         val currentLocale = AppCompatDelegate.getApplicationLocales()
-        val currentLang = if (currentLocale.isEmpty) "" else currentLocale.get(0)?.language ?: ""
+        val currentLang = if (currentLocale.isEmpty) "es" else currentLocale.get(0)?.language ?: "es"
         val selectedIndex = languageCodes.indexOf(currentLang).coerceAtLeast(0)
         spinnerLanguage.setSelection(selectedIndex)
 
@@ -177,14 +175,10 @@ class SettingsActivity : AppCompatActivity() {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val langCode = languageCodes[position]
                 val currentAppLocale = AppCompatDelegate.getApplicationLocales()
-                val currentLangCode = if (currentAppLocale.isEmpty) "" else currentAppLocale.get(0)?.language ?: ""
+                val currentLangCode = if (currentAppLocale.isEmpty) "es" else currentAppLocale.get(0)?.language ?: "es"
 
                 if (langCode != currentLangCode) {
-                    val localeList = if (langCode.isEmpty()) {
-                        LocaleListCompat.getEmptyLocaleList()
-                    } else {
-                        LocaleListCompat.forLanguageTags(langCode)
-                    }
+                    val localeList = LocaleListCompat.forLanguageTags(langCode)
                     AppCompatDelegate.setApplicationLocales(localeList)
                 }
             }
@@ -223,13 +217,22 @@ class SettingsActivity : AppCompatActivity() {
 
         configListenersActive = false
         when (key) {
-            ServoCommand.CONFIG_PAN_SPEED.value -> tvPanSpeed.text = value
-            ServoCommand.CONFIG_TILT_SPEED.value -> tvTiltSpeed.text = value
-            ServoCommand.CONFIG_AUTOPAN_SPEED.value -> tvAutopanSpeed.text = value
             ServoCommand.CONFIG_PAN_REVERSED.value -> togglePanReversed.check(if (value == "1") R.id.btnPanReversedOn else R.id.btnPanReversedOff)
             ServoCommand.CONFIG_TILT_REVERSED.value -> toggleTiltReversed.check(if (value == "1") R.id.btnTiltReversedOn else R.id.btnTiltReversedOff)
             ServoCommand.MAX_PAN_ANGLE.value -> tvMaxPanAngle.text = value
             ServoCommand.MAX_TILT_ANGLE.value -> tvMaxTiltAngle.text = value
+            ServoCommand.CONFIG_SERVO_STEP_MS.value -> tvServoStepMs.text = value
+            ServoCommand.CONFIG_AUTO_PAN_STEP_MS.value -> tvAutoPanStepMs.text = value
+            ServoCommand.RESET.value -> {
+                // Reset UI to placeholder — server will re-send actual config values
+                val placeholder = getString(R.string.config_placeholder)
+                togglePanReversed.check(R.id.btnPanReversedOff)
+                toggleTiltReversed.check(R.id.btnTiltReversedOff)
+                tvMaxPanAngle.text = placeholder
+                tvMaxTiltAngle.text = placeholder
+                tvServoStepMs.text = placeholder
+                tvAutoPanStepMs.text = placeholder
+            }
         }
         configListenersActive = true
     }

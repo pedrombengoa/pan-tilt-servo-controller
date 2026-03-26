@@ -19,12 +19,12 @@ void AutoPanner::reset() {
     updateCount_ = 0;
 }
 
-AutoPanner::UpdateResult AutoPanner::update(ServoAxis& axis, int speed) {
+AutoPanner::UpdateResult AutoPanner::update(ServoAxis& axis, int speed, unsigned long stepMs) {
     UpdateResult result = {false, false};
     if (!active_) return result;
 
     unsigned long now = millis();
-    if (now - lastStep_ < Config::AUTO_PAN_STEP_MS) return result;
+    if (now - lastStep_ < stepMs) return result;
 
     int newAngle = axis.angle() + speed * direction_;
 

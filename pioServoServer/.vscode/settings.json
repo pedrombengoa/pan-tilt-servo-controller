@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^python -m platformio run 2>&1$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
