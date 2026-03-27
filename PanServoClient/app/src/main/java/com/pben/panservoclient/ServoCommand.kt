@@ -20,8 +20,11 @@ enum class ServoCommand(val value: String) {
     /** Toggle automated panning mode. */
     AUTOPAN("AUTOPAN"),
 
-    /** Stop all movement and center the servos. */
-    RESET("RESET"),
+    /** Stop all movement, center servos, and disable auto-pan. */
+    RESET_POSITION("RESET_POSITION"),
+
+    /** Restore all config settings to factory defaults. */
+    RESET_CONFIG("RESET_CONFIG"),
 
     /** Set whether pan servo is reversed (0=normal, 1=reversed). Default: 1. */
     CONFIG_PAN_REVERSED("CONFIG_PAN_REVERSED"),

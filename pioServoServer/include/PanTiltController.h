@@ -33,7 +33,8 @@ private:
 
     void processBTCommands();
     void processJoystickInput();
-    void resetSettings();
+    void resetPosition();
+    void resetConfig();
 
     void movePan(int direction, const String& source);
     void moveTilt(int direction, const String& source);

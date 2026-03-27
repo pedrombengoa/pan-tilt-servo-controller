@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity() {
         btnStop.setOnClickListener {
             isAutopan = false
             updatePlayPauseButton()
-            BluetoothConnection.sendCommand(ServoCommand.RESET)
+            BluetoothConnection.sendCommand(ServoCommand.RESET_POSITION)
         }
 
         btnUp.setOnTouchListener { _, event ->

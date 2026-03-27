@@ -25,6 +25,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var tvLog: TextView
     private lateinit var tvStatus: TextView
     private lateinit var btnClearLogs: Button
+    private lateinit var btnResetConfig: Button
     private lateinit var spinnerLanguage: Spinner
 
     // Language codes matching the spinner order (español first = default)
@@ -81,6 +82,11 @@ class SettingsActivity : AppCompatActivity() {
         btnClearLogs.setOnClickListener {
             BluetoothConnection.clearLogs()
             tvLog.text = ""
+        }
+
+        btnResetConfig = findViewById(R.id.btnResetConfig)
+        btnResetConfig.setOnClickListener {
+            BluetoothConnection.sendCommand(ServoCommand.RESET_CONFIG)
         }
     }
 
@@ -223,8 +229,11 @@ class SettingsActivity : AppCompatActivity() {
             ServoCommand.MAX_TILT_ANGLE.value -> tvMaxTiltAngle.text = value
             ServoCommand.CONFIG_SERVO_STEP_MS.value -> tvServoStepMs.text = value
             ServoCommand.CONFIG_AUTO_PAN_STEP_MS.value -> tvAutoPanStepMs.text = value
-            ServoCommand.RESET.value -> {
-                // Reset UI to placeholder — server will re-send actual config values
+            ServoCommand.RESET_POSITION.value -> {
+                // Position reset — no config UI changes needed, server will re-send config if applicable
+            }
+            ServoCommand.RESET_CONFIG.value -> {
+                // Reset config UI to placeholder — server will re-send actual config values
                 val placeholder = getString(R.string.config_placeholder)
                 togglePanReversed.check(R.id.btnPanReversedOff)
                 toggleTiltReversed.check(R.id.btnTiltReversedOff)

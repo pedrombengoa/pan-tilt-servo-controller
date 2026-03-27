@@ -41,7 +41,8 @@ The app communicates with the ESP32 over RFCOMM using newline-terminated text co
 | `LEFT` / `RIGHT` | Pan servo |
 | `UP` / `DOWN` | Tilt servo |
 | `AUTOPAN` | Toggle automated panning |
-| `RESET` | Stop all movement, center servos, reset config to defaults |
+| `RESET_POSITION` | Stop all movement, center servos, disable auto-pan |
+| `RESET_CONFIG` | Restore all config settings to factory defaults |
 | `CONFIG_PAN_REVERSED:<0\|1>` | Reverse pan direction (default 1) |
 | `CONFIG_TILT_REVERSED:<0\|1>` | Reverse tilt direction (default 0) |
 | `MAX_PAN_ANGLE:<value>` | Set max pan angle (0–270, step 10, default 180) |

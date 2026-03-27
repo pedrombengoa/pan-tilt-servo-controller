@@ -53,7 +53,17 @@ void PanTiltController::moveTilt(int direction, const String& source) {
     logger_.logCommand(source, cmd, pan_.angle(), tilt_.angle());
 }
 
-void PanTiltController::resetSettings() {
+void PanTiltController::resetPosition() {
+    pan_.reset(neutral_);
+    tilt_.reset(neutral_);
+
+    autoPanner_.reset();
+    lastManualDirection_ = 0;
+
+    logger_.log("Position reset to neutral (" + String(neutral_) + ")");
+}
+
+void PanTiltController::resetConfig() {
     joystick_.setCentroX(Config::DEFAULT_CENTRO_X);
     deadzone_ = Config::DEFAULT_DEADZONE;
     neutral_ = Config::DEFAULT_NEUTRAL;
@@ -64,12 +74,6 @@ void PanTiltController::resetSettings() {
     tilt_.setReversed(Config::TILT_SERVO_REVERSED);
     pan_.setMaxAngle(Config::DEFAULT_MAX_PAN_ANGLE);
     tilt_.setMaxAngle(Config::DEFAULT_MAX_TILT_ANGLE);
-
-    pan_.reset(neutral_);
-    tilt_.reset(neutral_);
-
-    autoPanner_.reset();
-    lastManualDirection_ = 0;
 
     logger_.logResetBanner(pan_.angle(), tilt_.angle());
     logCurrentConfig();
@@ -98,8 +102,12 @@ void PanTiltController::processBTCommands() {
         case Command::DOWN:
             moveTilt(-1, "bluetooth");
             break;
-        case Command::RESET:
-            resetSettings();
+        case Command::RESET_POSITION:
+            resetPosition();
+            logger_.logResetComplete();
+            break;
+        case Command::RESET_CONFIG:
+            resetConfig();
             logger_.logResetComplete();
             break;
         case Command::AUTOPAN:
@@ -140,7 +148,8 @@ void PanTiltController::processJoystickInput() {
     // Button handling
     Joystick::ButtonEvent btnEvent = joystick_.updateButton();
     if (btnEvent == Joystick::ButtonEvent::LONG_PRESS) {
-        resetSettings();
+        resetConfig();
+        resetPosition();
         logger_.logResetComplete();
     } else if (btnEvent == Joystick::ButtonEvent::SHORT_PRESS) {
         autoPanner_.toggle(lastManualDirection_);

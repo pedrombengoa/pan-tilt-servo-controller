@@ -45,6 +45,7 @@
     <string name="auto_pan_step_ms">Paso de auto-pan (ms)</string>
     <string name="toggle_on">ON</string>
     <string name="toggle_off">OFF</string>
+    <string name="reset_config">Restablecer configuración</string>
 
     <!-- Permissions -->
     <string name="permission_required">Permiso requerido</string>

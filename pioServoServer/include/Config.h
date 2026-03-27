@@ -27,7 +27,7 @@ namespace Config {
     constexpr unsigned long DEFAULT_SERVO_STEP_MS = 50;
 
     // Auto-pan step interval (separate from manual speed)
-    constexpr unsigned long DEFAULT_AUTO_PAN_STEP_MS = 100;
+    constexpr unsigned long DEFAULT_AUTO_PAN_STEP_MS = 50;
 
     // Timing
     constexpr unsigned long LONG_PRESS_MS = 2000;

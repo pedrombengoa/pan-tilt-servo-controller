@@ -62,6 +62,7 @@
     <string name="auto_pan_step_ms">Auto Pan Step (ms)</string>
     <string name="toggle_on">ON</string>
     <string name="toggle_off">OFF</string>
+    <string name="reset_config">Reset Config</string>
 
     <!-- Config placeholder -->
     <string name="config_placeholder">--</string>

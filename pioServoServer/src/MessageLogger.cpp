@@ -50,7 +50,8 @@ void MessageLogger::logAvailableCommands() {
         commandToString(Command::RIGHT) + ", " +
         commandToString(Command::UP) + ", " +
         commandToString(Command::DOWN) + ", " +
-        commandToString(Command::RESET) + ", " +
+        commandToString(Command::RESET_POSITION) + ", " +
+        commandToString(Command::RESET_CONFIG) + ", " +
         commandToString(Command::AUTOPAN));
 }
 
@@ -66,7 +67,7 @@ void MessageLogger::logResetBanner(int panPosition, int tiltPosition) {
     log("\n╔════════════════════════════════════════╗");
     log("║  SETTINGS RESET TO DEFAULTS  ║");
     log("╚════════════════════════════════════════╝");
-    logCommand("Reset", Command::RESET, panPosition, tiltPosition);
+    logCommand("Reset", Command::RESET_CONFIG, panPosition, tiltPosition);
 }
 
 void MessageLogger::logResetComplete() {

@@ -25,20 +25,23 @@ Parsing is case-insensitive. Parameterized commands use `KEY:VALUE` format.
 
 ## Control Commands
 
-| Command    | Format   | Effect                                  |
-|------------|----------|-----------------------------------------|
-| `RESET`    | no param | Restore all settings to factory defaults |
-| `AUTOPAN`  | no param | Toggle automatic pan sweeping            |
+| Command          | Format   | Effect                                          |
+|------------------|----------|--------------------------------------------------|
+| `RESET_POSITION` | no param | Move both servos to neutral, stop auto-panner    |
+| `RESET_CONFIG`   | no param | Restore all config settings to factory defaults  |
+| `AUTOPAN`        | no param | Toggle automatic pan sweeping                    |
 
-### RESET details
+### RESET_POSITION details
+Moves both servos to neutral (90°), disables auto-panner, clears last manual direction.
+
+### RESET_CONFIG details
 Restores: `servoStepMs`=50, `deadzone`=800, `neutral`=90°,
-pan reversed=true, tilt reversed=false, pan maxAngle=180°, tilt maxAngle=50°,
-both servos move to 90°, auto-panner off.
+pan reversed=true, tilt reversed=false, pan maxAngle=180°, tilt maxAngle=50°.
 
 ### AUTOPAN details
 - Oscillates pan servo between its min/max limits at the current step speed.
 - Resumes the last manual direction if available, otherwise sweeps right first.
-- Disabled automatically by: LEFT, RIGHT, significant joystick movement, or RESET.
+- Disabled automatically by: LEFT, RIGHT, significant joystick movement, or RESET_POSITION.
 
 ## Configuration Commands
 

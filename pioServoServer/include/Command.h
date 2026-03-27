@@ -6,7 +6,8 @@ enum class Command {
     RIGHT,
     UP,
     DOWN,
-    RESET,
+    RESET_POSITION,
+    RESET_CONFIG,
     AUTOPAN,
     CONFIG_PAN_REVERSED,
     CONFIG_TILT_REVERSED,
@@ -30,8 +31,9 @@ inline ParsedCommand parseCommand(const String& str) {
     if (upper == "RIGHT")     return { Command::RIGHT, 0 };
     if (upper == "UP")        return { Command::UP, 0 };
     if (upper == "DOWN")      return { Command::DOWN, 0 };
-    if (upper == "RESET")     return { Command::RESET, 0 };
-    if (upper == "AUTOPAN")   return { Command::AUTOPAN, 0 };
+    if (upper == "RESET_POSITION") return { Command::RESET_POSITION, 0 };
+    if (upper == "RESET_CONFIG")   return { Command::RESET_CONFIG, 0 };
+    if (upper == "AUTOPAN")        return { Command::AUTOPAN, 0 };
 
     int sep = upper.indexOf(':');
     if (sep > 0) {
@@ -55,7 +57,8 @@ inline const char* commandToString(Command cmd) {
         case Command::RIGHT:                   return "RIGHT";
         case Command::UP:                      return "UP";
         case Command::DOWN:                    return "DOWN";
-        case Command::RESET:                   return "RESET";
+        case Command::RESET_POSITION:          return "RESET_POSITION";
+        case Command::RESET_CONFIG:            return "RESET_CONFIG";
         case Command::AUTOPAN:                 return "AUTOPAN";
         case Command::CONFIG_PAN_REVERSED:     return "CONFIG_PAN_REVERSED";
         case Command::CONFIG_TILT_REVERSED:    return "CONFIG_TILT_REVERSED";
