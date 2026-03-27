@@ -21,13 +21,13 @@ namespace Config {
 
     // Default angle limits
     constexpr int DEFAULT_MAX_PAN_ANGLE = 180;
-    constexpr int DEFAULT_MAX_TILT_ANGLE = 50;
+    constexpr int DEFAULT_MAX_TILT_ANGLE = 100;
 
     // Default servo step interval
-    constexpr unsigned long DEFAULT_SERVO_STEP_MS = 50;
+    constexpr unsigned long DEFAULT_SERVO_STEP_MS = 200;
 
     // Auto-pan step interval (separate from manual speed)
-    constexpr unsigned long DEFAULT_AUTO_PAN_STEP_MS = 50;
+    constexpr unsigned long DEFAULT_AUTO_PAN_STEP_MS = 200;
 
     // Timing
     constexpr unsigned long LONG_PRESS_MS = 2000;

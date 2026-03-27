@@ -49,7 +49,7 @@ class SettingsActivity : AppCompatActivity() {
         private const val SERVO_STEP_MS_STEP = 10
         private const val AUTO_PAN_STEP_MS_MIN = 10
         private const val AUTO_PAN_STEP_MS_MAX = 2000
-        private const val AUTO_PAN_STEP_MS_STEP = 50
+        private const val AUTO_PAN_STEP_MS_STEP = 10
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
